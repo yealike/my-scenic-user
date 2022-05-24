@@ -43,6 +43,8 @@
 <script>
 import '~/assets/css/sign.css'
 import '~/assets/iconfont/iconfont.css'
+import loginApi from "@/api/member/loginApi";
+import cookie from "js-cookie";
 
 export default {
   layout: 'sign',
@@ -56,7 +58,7 @@ export default {
       // 用户信息
       loginInfo: {
         id: '',
-        nickName: '',
+        username: '',
         avatar: '',
         email: ''
       },
@@ -68,7 +70,26 @@ export default {
 
     }
   },
-  methods: {}
+  methods: {
+    // 登录方法-->登录返回token
+    submitLogin() {
+      loginApi.login(this.user)
+        .then(resp => {
+          // 登录成功
+          if (resp.data.success) {
+            // 把token存到cookie里面
+            // 参数1：cookie名称   参数2：cookie值   参数3：作用范围
+            cookie.set('travel_token', resp.data.data.token, {domain: 'localhost'})
+            // 跳转页面
+            window.location.href = '/'
+            this.$message({
+              type: 'success',
+              message: `${resp.data.msg}`
+            })
+          }
+        })
+    }
+  }
 
 
 }
