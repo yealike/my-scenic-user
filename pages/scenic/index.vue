@@ -15,7 +15,6 @@
             </div>
           </div>
 
-
         </div>
       </div>
     </div>
@@ -58,6 +57,7 @@ export default {
   margin: 5px;
   border-radius: 5px;
   background-color: #98f5c4;
+  cursor: pointer;
 }
 
 .thu-img {

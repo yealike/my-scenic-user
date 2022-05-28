@@ -10,7 +10,7 @@
       <el-form ref="userForm" :model="params" :rules="rules">
         <!--用户名-->
         <el-form-item class="input-prepend restyle" prop="nickname">
-          <el-input type="text" auto-complete="false" placeholder="昵称" v-model="params.nickName"/>
+          <el-input type="text" auto-complete="false" placeholder="昵称" v-model="params.username"/>
           <i class="iconfont icon-yonghu"></i>
         </el-form-item>
 
@@ -28,7 +28,7 @@
           </div>
           <div class="btn" style="position: absolute;right: 0;top: 6px;width: 40%;">
             <a href="javascript:" type="button"
-               @click="getCodeFun()"
+               @click="codeFlag && getCodeFun()"
                style="border: none;">{{ codeTest }}</a>
           </div>
 
@@ -71,14 +71,16 @@
 <script>
 import '~/assets/css/sign.css'
 import '~/assets/iconfont/iconfont.css'
+import registerApi from "~/api/member/registerApi";
 
 
 export default {
   layout: 'sign',
   data() {
     return {
+      codeFlag: true,
       params: {
-        nickName: '',
+        username: '',
         email: '',
         code: '',
         password: '',
@@ -97,6 +99,55 @@ export default {
   },
   methods: {
 
+    getCodeFun() {
+      // 获取验证码操作
+      registerApi.getCodeByEmail(this.params.email)
+        .then(resp => {
+          if (resp.data.success) {
+
+          } else {
+            this.$message.error(`${resp.data.msg}`)
+          }
+        }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: '服务器内部错误'
+        })
+      })
+      // 文字变成数字倒计时
+      this.codeFlag = false
+      this.codeTest = 60
+      let clock = window.setInterval(() => {
+        if (this.codeTest > 0) {
+          this.codeTest--
+        } else {
+          this.codeFlag = true
+          this.codeTest = '获取验证码'
+          window.clearInterval(clock)
+        }
+      }, 1000)
+    },
+    // 注册账号
+    submitRegister() {
+      registerApi.register(this.params)
+        .then(resp => {
+          if (resp.data.success) {
+            // 跳转到登录页
+            window.location.href = '/login'
+          } else {
+            this.$message({
+              type: 'error',
+              message: '注册失败'
+            })
+          }
+
+        }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: '注册失败'
+        })
+      })
+    }
   }
 }
 </script>

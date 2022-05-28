@@ -5,7 +5,7 @@
 
     <header class="head">
       <div class="head-nav">
-        <el-menu mode="horizontal" :router="true"  active-text-color="#22A491FF" text-color="#000" default-active="/">
+        <el-menu mode="horizontal" :router="true" active-text-color="#22A491FF" text-color="#000" default-active="/">
           <el-menu-item>
             <nuxt-link to="/"><img style="width: 180px" src="~/static/logo.png" alt="旅行者说"></nuxt-link>
           </el-menu-item>
@@ -30,10 +30,25 @@
               <nuxt-link to="/register" style="color: #22a491;text-decoration: none">注册</nuxt-link>
             </div>
 
-            <div v-if="userInfo.id">
-              <span>{{ userInfo.username }}</span>
-              <img style="width: 50px;border-radius: 50%" :src="userInfo.avatar" alt="头像">
-            </div>
+            <!--            <div v-if="userInfo.id">-->
+            <!--              <span>{{ userInfo.username }}</span>-->
+            <!--              <img style="width: 50px;border-radius: 50%" :src="userInfo.avatar" alt="头像">-->
+            <!--            </div>-->
+
+            <el-dropdown v-if="userInfo.id">
+                <span>{{ userInfo.username }}
+                  <img style="width: 50px;border-radius: 50%" :src="userInfo.avatar" alt="头像">
+                </span>
+              <el-dropdown-menu>
+                <div style="width: 200px;height: 180px;">
+                  <ul class="list">
+                    <li>{{ userInfo.username }}</li>
+                    <li><nuxt-link to="/member">个人中心</nuxt-link></li>
+                    <li @click="logout">退出登录</li>
+                  </ul>
+                </div>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-menu-item>
 
 
@@ -91,8 +106,14 @@ export default {
           } else {
             this.userInfo.avatar = resp.data.data.member.avatar
           }
-          // alert(this.userInfo.id)
+          cookie.set('userInfo', JSON.stringify(this.userInfo))
         })
+    },
+    // 退出登录-->删除cookie,刷新页面
+    logout() {
+      cookie.set('travel_token', '', 0)
+      cookie.set('userInfo', '', 0)
+      window.location.reload()
     }
   }
 }
@@ -138,5 +159,21 @@ body {
 
 .contact {
   width: 100px;
+}
+
+.list {
+  padding: 20px;
+}
+
+.list li {
+  list-style: none;
+  margin-top: 10px;
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.list li:hover {
+  background-color: #d7cbcb;
 }
 </style>

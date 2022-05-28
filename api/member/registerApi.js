@@ -6,9 +6,8 @@ export default {
   // 根据邮箱发送验证码
   getCodeByEmail(email) {
     return request({
-      url: `${baseUrl}/sendCode`,
-      method: 'post',
-      data: email
+      url: `${baseUrl}/sendCode?email=` + email,
+      method: 'post'
     })
   },
   // 用户注册

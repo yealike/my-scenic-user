@@ -86,6 +86,8 @@ export default {
               type: 'success',
               message: `${resp.data.msg}`
             })
+          }else {
+            this.$message.error(resp.data.msg)
           }
         })
     }
