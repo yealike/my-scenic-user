@@ -85,7 +85,7 @@ import cityApi from "@/api/scenic/cityApi";
 import descriptionApi from "@/api/scenic/descriptionApi";
 import priceApi from "@/api/scenic/priceApi";
 import InfoApi from "@/api/scenic/InfoApi";
-import cookie from "js-cookie";
+
 import commentApi from "@/api/scenic/commentApi";
 
 export default {
@@ -129,8 +129,10 @@ export default {
   },
   mounted() {
 
-    let str = cookie.get('userInfo')
-    if (str!==''){
+    let str = localStorage.getItem('userInfo')
+    if (str == '' || str == null || str == undefined) {
+      console.log('localStorage--userInfo不存在,用户可能未登录==>scenic/id')
+    } else {
       this.userInfo = JSON.parse(str)
     }
 
