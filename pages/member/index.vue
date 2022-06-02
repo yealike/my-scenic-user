@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg container-md my-main" style="border: #4e4e4e 1px solid">
+  <div class="container-lg container-md my-main">
     <div class="row clearfix header">
       <div style="margin-top: 60px;height: 118px" class="row clearfix">
 
@@ -25,9 +25,52 @@
     <div class="row clearfix" style="margin-top: 20px">
       <!-- 左侧主体 -->
       <div class="col-md-9">
-        <div class="container-md container-lg" style="border: #4e4e4e 1px solid;border-radius: 5px">
-          <h3 style="margin-top: 20px;margin-left: 20px">我的作品</h3>
-          <el-empty description="空空如也" :image-size="500"></el-empty>
+        <div class="container-md container-lg left-main">
+          <div class="my-tab" style="display: flex">
+            <span style="font-size: 30px;font-family: 方正粗黑宋简体">我的作品 </span>
+            <span style="color: #1BADB6;margin-left: 20px;margin-right: 20px"> {{pageInfo.total}}</span>
+
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+              <el-tab-pane label="最新发布" name="first"></el-tab-pane>
+              <el-tab-pane label="最多点赞" name="second"></el-tab-pane>
+              <el-tab-pane label="最多浏览" name="third"></el-tab-pane>
+            </el-tabs>
+
+          </div>
+
+          <el-empty v-if="!articleList" description="空空如也" :image-size="500"></el-empty>
+
+          <!-- 缩略图 -->
+          <div class="row ">
+            <div class="col-md-3" style="margin: 10px 0 10px 0" v-for="item in articleList">
+              <div class="thumbnail thu-item">
+                <img style="width: 100%;border-radius: 6px;height: 130px" :alt="item.title" :src="item.cover"/>
+                <div class="thu-font">
+                  <span>{{item.title}}在读生/没学过但爱唱歌的小邓在此！欢迎来我的网易云-邓园长这儿听歌！微博：动物园邓园长 快乐扣群：980248279</span>
+                </div>
+                <div style="padding-left: 10px;">
+                  <img src="~/static/浏览量.png" style="width: 30px;height: 30px;" alt="浏览：" title="浏览量">{{item.viewCount}}
+                  <img src="~/static/点赞_块.png" style="width: 20px;height: 20px;margin-left: 20%" alt="点赞：" title="点赞">{{item.praiseCount}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分页 -->
+          <div class="page-helper">
+            <el-pagination
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageInfo.current"
+              :page-sizes="[8,12,24,36]"
+              :page-size="100"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pageInfo.total"
+            >
+            </el-pagination>
+          </div>
+
         </div>
       </div>
 
@@ -121,6 +164,7 @@
 <script>
 import 'bootstrap/dist/css/bootstrap.css'
 import member from "@/api/member/member";
+import articleApi from "@/api/article/article";
 
 
 export default {
@@ -151,7 +195,15 @@ export default {
         intro: ''
       },
       // 头像上传地址
-      imageUrl: 'http://localhost:88/scenic/scenic/oss'
+      imageUrl: 'http://localhost:88/scenic/scenic/oss',
+      pageInfo:{
+        userId:'',
+        current:1,
+        limit:8,
+        total:''
+      },
+      articleList:[],
+      activeName:'second'
     }
   },
   beforeMount() {
@@ -168,6 +220,14 @@ export default {
       this.userInfo = JSON.parse(str)
       // console.log(this.userInfo)
     }
+
+    console.log(this.userInfo)
+
+    // 初始化作品数据
+    if (this.userInfo.id){
+      this.articleInit(this.userInfo.id,1,8)
+    }
+    // this.articleInit(this.pageInfo.userId,this.pageInfo.limit,this.pageInfo.limit)
   },
   methods: {
     // 图片上传成功之后的回调
@@ -214,6 +274,32 @@ export default {
     },
     getContent(con) {
       this.content = con
+    },
+    // 获取我的创作作品--页面初始化
+    articleInit(userId,current,limit){
+      articleApi.getArticleByUserIdWithPage(userId,current,limit)
+      .then(resp=>{
+        this.articleList = resp.data.data.info.records
+        console.log(resp)
+        this.pageInfo.total = resp.data.data.info.total
+        this.pageInfo.current = resp.data.data.info.current
+        this.pageInfo.limit = resp.data.data.info.size
+
+        console.log(this.pageInfo)
+        // console.log('文章数据',this.articleList)
+      })
+      .catch(err=>{
+        console.log('获取作品数据失败==>',err)
+      })
+
+    },
+    // 页面大小发生变化
+    handleSizeChange(val){
+     this.articleInit(this.userInfo.id,1,val)
+    },
+    // 页码发生变化
+    handleCurrentChange(val){
+      this.articleInit(this.userInfo.id,val,this.pageInfo.limit)
     }
   }
 }
@@ -223,11 +309,60 @@ export default {
 .my-main {
   min-height: 1000px;
   border-radius: 5px;
+  /*box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.6);*/
 }
 
 .header {
   height: 179px;
   background-image: url(./static/background.png);
   border-radius: 6px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.1);
+}
+
+.thu-item{
+  /*border: #4e4e4e 1px solid;*/
+  /*padding: 5px 0 5px 0;*/
+  border-radius: 3px;
+  /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);*/
+}
+
+.thu-item:hover{
+  /*border: #4e4e4e 1px solid;*/
+  /*padding: 5px 0 5px 0;*/
+  border-radius: 3px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.1);
+}
+
+.thu-font{
+  margin-top: 3px;
+  color: #0e6de8;
+  font-family: "UD Digi Kyokasho N-R";
+  line-height: 1.2em;
+  font-size: 16px;
+  /*padding: 6px;*/
+  padding-left: 6px;
+  /*border: #4e4e4e 1px solid;*/
+  height: 38px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.page-helper {
+  padding: 0;
+  margin-top: 30px;
+  text-align: center;
+  /*border: solid 1px #000000;*/
+  margin-bottom: 20px;
+}
+.left-main{
+  /*border: #4e4e4e 1px solid;*/
+  /*margin-top: 20px;*/
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.1);
 }
 </style>

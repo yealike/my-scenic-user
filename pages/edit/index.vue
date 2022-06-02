@@ -4,7 +4,31 @@
       <h1>编写新的作品</h1>
 
       <div class="create-title">
-        <el-input id="title" v-model="articalInfo.title" placeholder="输入标题"></el-input>
+
+        <el-form :model="articalInfo" status-icon ref="ruleForm" label-width="100px">
+          <el-form-item label="文章标题">
+            <el-input type="text" v-model="articalInfo.title" placeholder="输入文章标题" autocomplete="off"></el-input>
+          </el-form-item>
+
+          <el-form-item label="文章封面">
+            <el-image
+              style="border-radius: 5px;width: 150px;height: 100px;"
+              fit="fit"
+              :src="articalInfo.cover!=''?articalInfo.cover:'http://localhost:3000/R-C.jpg'"
+            >
+            </el-image>
+            <!-- 图片上传组件 -->
+            <el-upload
+              style="display: inline-block;margin-left: 10px;vertical-align: bottom;"
+              :action="imageUrl"
+              list-type="picture-card"
+              :on-success="uploadImage"
+            >
+              <i class="el-icon-plus"></i>
+            </el-upload>
+          </el-form-item>
+
+        </el-form>
       </div>
 
       <t-editor v-model="articalInfo.content" :height="800"></t-editor>
@@ -17,6 +41,7 @@
 <script>
 import TEditor from "@/components/TEditor";
 import 'bootstrap/dist/css/bootstrap.css'
+import articleApi from "@/api/article/article";
 
 export default {
   name: "index",
@@ -25,15 +50,43 @@ export default {
     return {
       articalInfo: {
         id: '',
+        userId:'',
         title: '',
+        cover:'',
         content: ''
-      }
+      },
+      imageUrl: 'http://localhost:88/scenic/scenic/oss'
     }
   },
   methods: {
     submitData() {
-      console.log(this.articalInfo)
-    }
+      const userInfo = localStorage.getItem('userInfo')
+      const userJson = JSON.parse(userInfo)
+      // 如果查不到用户信息，就不发送网络请求
+      this.articalInfo.userId = userJson.id
+      // console.log(userJson)
+      if (this.articalInfo.userId==''){
+        this.$message.error('请先登录')
+      }else {
+        articleApi.addOneArticle(this.articalInfo)
+          .then(resp=>{
+            this.$message({
+              type:'success',
+              message:'保存成功'
+            })
+            // 发送成功之后，跳转到个人中心
+            window.location.href = '/member'
+          })
+          .catch(err=>{
+            this.$message.error('保存失败！')
+          })
+      }
+    },
+    // 图片上传成功之后的回调
+    uploadImage(resp, file) {
+      this.articalInfo.cover = resp.data.data.url
+      console.log('file==>', file)
+    },
   }
 }
 </script>
@@ -49,7 +102,7 @@ export default {
 }
 
 .create-title {
-  width: 20%;
+  width: 35%;
   margin: 30px auto;
 }
 
