@@ -1,20 +1,26 @@
 <template>
-  <div class="sign">
-    <!--标题-->
-    <div class="log">
-      登录注册
-    </div>
-    <!--表单-->
-    <nuxt/>
-  </div>
+  <a-card class="sign">
+    <nuxt />
+  </a-card>
 </template>
 
 <script>
 export default {
-  name: "Sign"
+  name: 'sign',
 }
 </script>
 
 <style scoped>
-
+.sign {
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.sign .title {
+  background-color: #ccc;
+}
 </style>

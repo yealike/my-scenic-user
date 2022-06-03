@@ -6,7 +6,7 @@
 
           <div class="col-md-4" v-for="item in scenicList">
             <div class="thumbnail thu-item" @click="toDetail(item.id)">
-              <img class="thu-img" :alt="item.name" :src="item.url"/>
+              <img class="thu-img" :alt="item.name" :src="item.url" />
               <div class="caption">
                 <h3 align="center">
                   {{ item.name }}
@@ -22,15 +22,14 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css'
-import scenicApi from "@/api/scenic/scenicApi";
+import scenicApi from '@/api/scenic/scenicApi'
 
 export default {
   layout: 'default',
-  name: "index",
+  name: 'index',
   data() {
     return {
-      scenicList: []
+      scenicList: [],
     }
   },
   mounted() {
@@ -38,16 +37,16 @@ export default {
   },
   methods: {
     getScenicListInfo() {
-      scenicApi.getScenicList(1, 10)
-        .then(resp => {
-          this.scenicList = resp.data.data.records
-        })
+      scenicApi.getScenicList(1, 10).then((resp) => {
+        this.scenicList = resp.data.data.records
+      })
+      console.log(123, this.scenicList)
     },
     // 去景点详情页
     toDetail(id) {
-      this.$router.push({path: '/scenic/' + id})
-    }
-  }
+      this.$router.push({ path: '/scenic/' + id })
+    },
+  },
 }
 </script>
 

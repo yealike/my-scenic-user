@@ -11,19 +11,10 @@
           </el-form-item>
 
           <el-form-item label="文章封面">
-            <el-image
-              style="border-radius: 5px;width: 150px;height: 100px;"
-              fit="fit"
-              :src="articalInfo.cover!=''?articalInfo.cover:'http://localhost:3000/R-C.jpg'"
-            >
+            <el-image style="border-radius: 5px;width: 150px;height: 100px;" fit="fit" :src="articalInfo.cover!=''?articalInfo.cover:'http://localhost:3000/R-C.jpg'">
             </el-image>
             <!-- 图片上传组件 -->
-            <el-upload
-              style="display: inline-block;margin-left: 10px;vertical-align: bottom;"
-              :action="imageUrl"
-              list-type="picture-card"
-              :on-success="uploadImage"
-            >
+            <el-upload style="display: inline-block;margin-left: 10px;vertical-align: bottom;" :action="imageUrl" list-type="picture-card" :on-success="uploadImage">
               <i class="el-icon-plus"></i>
             </el-upload>
           </el-form-item>
@@ -39,23 +30,22 @@
 </template>
 
 <script>
-import TEditor from "@/components/TEditor";
-import 'bootstrap/dist/css/bootstrap.css'
-import articleApi from "@/api/article/article";
+import TEditor from '@/components/TEditor'
+import articleApi from '@/api/article/article'
 
 export default {
-  name: "index",
-  components: {TEditor},
+  name: 'index',
+  components: { TEditor },
   data() {
     return {
       articalInfo: {
         id: '',
-        userId:'',
+        userId: '',
         title: '',
-        cover:'',
-        content: ''
+        cover: '',
+        content: '',
       },
-      imageUrl: 'http://localhost:88/scenic/scenic/oss'
+      imageUrl: 'http://localhost:88/scenic/scenic/oss',
     }
   },
   methods: {
@@ -65,19 +55,20 @@ export default {
       // 如果查不到用户信息，就不发送网络请求
       this.articalInfo.userId = userJson.id
       // console.log(userJson)
-      if (this.articalInfo.userId==''){
+      if (this.articalInfo.userId == '') {
         this.$message.error('请先登录')
-      }else {
-        articleApi.addOneArticle(this.articalInfo)
-          .then(resp=>{
+      } else {
+        articleApi
+          .addOneArticle(this.articalInfo)
+          .then((resp) => {
             this.$message({
-              type:'success',
-              message:'保存成功'
+              type: 'success',
+              message: '保存成功',
             })
             // 发送成功之后，跳转到个人中心
             window.location.href = '/member'
           })
-          .catch(err=>{
+          .catch((err) => {
             this.$message.error('保存失败！')
           })
       }
@@ -87,7 +78,7 @@ export default {
       this.articalInfo.cover = resp.data.data.url
       console.log('file==>', file)
     },
-  }
+  },
 }
 </script>
 
@@ -104,11 +95,6 @@ export default {
 .create-title {
   width: 35%;
   margin: 30px auto;
-}
-
-#title {
-  /*width: 19%;*/
-
 }
 
 /*.footer {*/

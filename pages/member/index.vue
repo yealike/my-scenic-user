@@ -44,7 +44,7 @@
           <div class="row ">
             <div class="col-md-3" style="margin: 10px 0 10px 0" v-for="item in articleList">
               <div class="thumbnail thu-item">
-                <img style="width: 100%;border-radius: 6px;height: 130px" :alt="item.title" :src="item.cover"/>
+                <img style="width: 100%;border-radius: 6px;height: 130px" :alt="item.title" :src="item.cover" />
                 <div class="thu-font">
                   <span>{{item.title}}在读生/没学过但爱唱歌的小邓在此！欢迎来我的网易云-邓园长这儿听歌！微博：动物园邓园长 快乐扣群：980248279</span>
                 </div>
@@ -58,16 +58,8 @@
 
           <!-- 分页 -->
           <div class="page-helper">
-            <el-pagination
-              background
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="pageInfo.current"
-              :page-sizes="[8,12,24,36]"
-              :page-size="100"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="pageInfo.total"
-            >
+            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageInfo.current" :page-sizes="[8,12,24,36]" :page-size="100"
+              layout="total, sizes, prev, pager, next, jumper" :total="pageInfo.total">
             </el-pagination>
           </div>
 
@@ -96,15 +88,15 @@
           <div style="display: flex">
             <h4>创作</h4>
             <nuxt-link to="/edit">
-              <img src="~/static/create.png" style="width: 20px;height: 20px;margin-left: 10px" alt="创作"></nuxt-link>
+              <img src="~/static/create.png" style="width: 20px;height: 20px;margin-left: 10px" alt="创作">
+            </nuxt-link>
           </div>
         </el-card>
       </div>
     </div>
 
     <!-- 对话框，用于修改用户信息 -->
-    <el-dialog title="修改信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false"
-               :close-on-press-escape="false">
+    <el-dialog title="修改信息" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :close-on-press-escape="false">
 
       <el-form :model="updateInfo" label-width="80px">
         <el-form-item label="用户名">
@@ -119,30 +111,16 @@
         </el-form-item>
 
         <el-form-item label="头像">
-          <el-image
-            style="border-radius: 5px;width: 150px;height: 100px;"
-            fit="fit"
-            :src="updateInfo.avatar"
-          >
+          <el-image style="border-radius: 5px;width: 150px;height: 100px;" fit="fit" :src="updateInfo.avatar">
           </el-image>
           <!-- 图片上传组件 -->
-          <el-upload
-            style="display: inline-block;margin-left: 10px;vertical-align: bottom;"
-            :action="imageUrl"
-            list-type="picture-card"
-            :on-success="uploadImage"
-          >
+          <el-upload style="display: inline-block;margin-left: 10px;vertical-align: bottom;" :action="imageUrl" list-type="picture-card" :on-success="uploadImage">
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
 
         <el-form-item label="出生日期">
-          <el-date-picker
-            v-model="updateInfo.birth"
-            type="date"
-            @change="dateChange"
-            placeholder="选择日期"
-          >
+          <el-date-picker v-model="updateInfo.birth" type="date" @change="dateChange" placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
 
@@ -157,18 +135,15 @@
       </div>
     </el-dialog>
 
-
   </div>
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css'
-import member from "@/api/member/member";
-import articleApi from "@/api/article/article";
-
+import member from '@/api/member/member'
+import articleApi from '@/api/article/article'
 
 export default {
-  name: "index",
+  name: 'index',
   layout: 'default',
 
   data() {
@@ -184,7 +159,7 @@ export default {
         gender: '',
         id: '',
         intro: '',
-        articalCount: ''
+        articalCount: '',
       },
       updateInfo: {
         id: '',
@@ -192,30 +167,29 @@ export default {
         avatar: '',
         birth: '',
         gender: '',
-        intro: ''
+        intro: '',
       },
       // 头像上传地址
       imageUrl: 'http://localhost:88/scenic/scenic/oss',
-      pageInfo:{
-        userId:'',
-        current:1,
-        limit:8,
-        total:''
+      pageInfo: {
+        userId: '',
+        current: 1,
+        limit: 8,
+        total: '',
       },
-      articleList:[],
-      activeName:'second'
+      articleList: [],
+      activeName: 'second',
     }
   },
-  beforeMount() {
-
-  },
+  beforeMount() {},
   mounted() {
-
     // this.$refs.stu.$on('editor', this.getContent)
 
     let str = localStorage.getItem('userInfo')
     if (str == '' || str == null || str == undefined) {
-      console.log('获取用户信息失败，不存在键为userInfo的localStorage==>member.vue')
+      console.log(
+        '获取用户信息失败，不存在键为userInfo的localStorage==>member.vue'
+      )
     } else {
       this.userInfo = JSON.parse(str)
       // console.log(this.userInfo)
@@ -224,8 +198,8 @@ export default {
     console.log(this.userInfo)
 
     // 初始化作品数据
-    if (this.userInfo.id){
-      this.articleInit(this.userInfo.id,1,8)
+    if (this.userInfo.id) {
+      this.articleInit(this.userInfo.id, 1, 8)
     }
     // this.articleInit(this.pageInfo.userId,this.pageInfo.limit,this.pageInfo.limit)
   },
@@ -243,23 +217,21 @@ export default {
       this.updateInfo.birth = this.userInfo.birth
       this.updateInfo.gender = this.userInfo.gender
       this.updateInfo.intro = this.userInfo.intro
-
     },
     // 修改用户信息
     submitUpdate() {
-      member.updateById(this.updateInfo)
-        .then(resp => {
-          if (resp.data.success) {
-            this.$message({
-              type: 'success',
-              message: '修改成功！'
-            })
-            // 修改成功，刷新页面
-            window.location.reload()
-          } else {
-            this.$message.error('修改失败')
-          }
-        })
+      member.updateById(this.updateInfo).then((resp) => {
+        if (resp.data.success) {
+          this.$message({
+            type: 'success',
+            message: '修改成功！',
+          })
+          // 修改成功，刷新页面
+          window.location.reload()
+        } else {
+          this.$message.error('修改失败')
+        }
+      })
     },
     // 时间改变--修复原生时间选择器传到后端减一天的bug
     dateChange(date) {
@@ -276,32 +248,32 @@ export default {
       this.content = con
     },
     // 获取我的创作作品--页面初始化
-    articleInit(userId,current,limit){
-      articleApi.getArticleByUserIdWithPage(userId,current,limit)
-      .then(resp=>{
-        this.articleList = resp.data.data.info.records
-        console.log(resp)
-        this.pageInfo.total = resp.data.data.info.total
-        this.pageInfo.current = resp.data.data.info.current
-        this.pageInfo.limit = resp.data.data.info.size
+    articleInit(userId, current, limit) {
+      articleApi
+        .getArticleByUserIdWithPage(userId, current, limit)
+        .then((resp) => {
+          this.articleList = resp.data.data.info.records
+          console.log(resp)
+          this.pageInfo.total = resp.data.data.info.total
+          this.pageInfo.current = resp.data.data.info.current
+          this.pageInfo.limit = resp.data.data.info.size
 
-        console.log(this.pageInfo)
-        // console.log('文章数据',this.articleList)
-      })
-      .catch(err=>{
-        console.log('获取作品数据失败==>',err)
-      })
-
+          console.log(this.pageInfo)
+          // console.log('文章数据',this.articleList)
+        })
+        .catch((err) => {
+          console.log('获取作品数据失败==>', err)
+        })
     },
     // 页面大小发生变化
-    handleSizeChange(val){
-     this.articleInit(this.userInfo.id,1,val)
+    handleSizeChange(val) {
+      this.articleInit(this.userInfo.id, 1, val)
     },
     // 页码发生变化
-    handleCurrentChange(val){
-      this.articleInit(this.userInfo.id,val,this.pageInfo.limit)
-    }
-  }
+    handleCurrentChange(val) {
+      this.articleInit(this.userInfo.id, val, this.pageInfo.limit)
+    },
+  },
 }
 </script>
 
@@ -319,24 +291,24 @@ export default {
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.1);
 }
 
-.thu-item{
+.thu-item {
   /*border: #4e4e4e 1px solid;*/
   /*padding: 5px 0 5px 0;*/
   border-radius: 3px;
   /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1);*/
 }
 
-.thu-item:hover{
+.thu-item:hover {
   /*border: #4e4e4e 1px solid;*/
   /*padding: 5px 0 5px 0;*/
   border-radius: 3px;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.1);
 }
 
-.thu-font{
+.thu-font {
   margin-top: 3px;
   color: #0e6de8;
-  font-family: "UD Digi Kyokasho N-R";
+  font-family: 'UD Digi Kyokasho N-R';
   line-height: 1.2em;
   font-size: 16px;
   /*padding: 6px;*/
@@ -357,7 +329,7 @@ export default {
   /*border: solid 1px #000000;*/
   margin-bottom: 20px;
 }
-.left-main{
+.left-main {
   /*border: #4e4e4e 1px solid;*/
   /*margin-top: 20px;*/
   padding-top: 20px;

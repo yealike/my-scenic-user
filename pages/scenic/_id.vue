@@ -80,7 +80,6 @@
 
 <script>
 import scenicApi from "@/api/scenic/scenicApi";
-import 'bootstrap/dist/css/bootstrap.css'
 import cityApi from "@/api/scenic/cityApi";
 import descriptionApi from "@/api/scenic/descriptionApi";
 import priceApi from "@/api/scenic/priceApi";

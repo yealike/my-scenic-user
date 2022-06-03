@@ -1,69 +1,11 @@
 <template>
   <div>
-    <el-backtop>
-    </el-backtop>
-
-    <header class="head">
-      <div class="head-nav">
-        <el-menu mode="horizontal" :router="true" active-text-color="#22A491FF" text-color="#000" default-active="/">
-          <el-menu-item>
-            <nuxt-link to="/"><img style="width: 180px" src="~/static/logo.png" alt="旅行者说"></nuxt-link>
-          </el-menu-item>
-          <el-menu-item index="/" class="nav-font-size">首页</el-menu-item>
-          <el-menu-item index="/scenic" class="nav-font-size">景点</el-menu-item>
-          <el-menu-item index="3" class="nav-font-size">旅行日记</el-menu-item>
-          <el-menu-item index="4" class="nav-font-size">酒店</el-menu-item>
-          <el-menu-item>
-            <el-input
-              placeholder="请输入内容"
-              v-model="searchText"
-              clearable>
-            </el-input>
-            <el-button type="primary">搜索</el-button>
-          </el-menu-item>
-
-
-          <el-menu-item style="float: right;">
-            <div v-if="!userInfo.id">
-              <nuxt-link to="/login" style="color: #22a491;text-decoration: none">登录</nuxt-link>
-              |
-              <nuxt-link to="/register" style="color: #22a491;text-decoration: none">注册</nuxt-link>
-            </div>
-
-            <!--            <div v-if="userInfo.id">-->
-            <!--              <span>{{ userInfo.username }}</span>-->
-            <!--              <img style="width: 50px;border-radius: 50%" :src="userInfo.avatar" alt="头像">-->
-            <!--            </div>-->
-
-            <el-dropdown v-if="userInfo.id">
-                <span>{{ userInfo.username }}
-                  <img style="width: 50px;border-radius: 50%" :src="userInfo.avatar" alt="头像">
-                </span>
-              <el-dropdown-menu>
-                <div style="width: 200px;height: 180px;">
-                  <ul class="list">
-                    <li>{{ userInfo.username }}</li>
-                    <li>
-                      <nuxt-link to="/member">个人中心</nuxt-link>
-                    </li>
-                    <li @click="logout">退出登录</li>
-                  </ul>
-                </div>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-menu-item>
-
-
-        </el-menu>
-      </div>
-    </header>
-
+    <Navbar />
     <!-- 主题显示区域 -->
     <div style="width: 98%;margin: 0 auto;min-height: 1000px">
-      <nuxt/>
+      <nuxt />
     </div>
     <!-- 主题显示区域 -->
-
 
     <!-- 底部组件 -->
     <footer class="footer">
@@ -75,10 +17,12 @@
   </div>
 </template>
 <script>
-import cookie from "js-cookie";
-import loginApi from "@/api/member/loginApi";
+import cookie from 'js-cookie'
+import loginApi from '@/api/member/loginApi'
+import Navbar from '@/components/Navbar.vue'
 
 export default {
+  components: { Navbar },
   data() {
     return {
       searchText: '',
@@ -93,8 +37,8 @@ export default {
         focus: '',
         gender: '',
         intro: '',
-        gmtCreate: ''
-      }
+        gmtCreate: '',
+      },
     }
   },
   created() {
@@ -127,8 +71,9 @@ export default {
         console.log('获取用户信息时token==>为空,不发送网络请求default.vue')
       } else {
         // token不为空，发送请求获取用户信息
-        loginApi.getLoginUserInfo()
-          .then(resp => {
+        loginApi
+          .getLoginUserInfo()
+          .then((resp) => {
             console.log('用户信息获取成功！==>default')
             if (resp.data.success) {
               this.userInfo.id = resp.data.data.member.id
@@ -149,7 +94,7 @@ export default {
               console.log('获取token之后，获取用户信息失败')
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.log('获取用户信息失败，错误信息==>', err)
           })
       }
@@ -159,8 +104,8 @@ export default {
       cookie.remove('travel_token')
       localStorage.removeItem('userInfo')
       window.location.href = '/'
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -183,13 +128,11 @@ body {
 .head-nav {
   width: 98%;
   margin: 0 auto;
-
 }
 
 .nav-font-size {
   font-size: 26px;
 }
-
 
 .footer {
   margin-top: 30px;
@@ -198,7 +141,7 @@ body {
   height: 300px;
   padding: 5px;
   border: black 1px solid;
-  background-color: #3C3C3C;
+  background-color: #3c3c3c;
   bottom: 0;
   border-top: #107067 4px solid;
 }
