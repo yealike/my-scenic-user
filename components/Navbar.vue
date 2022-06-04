@@ -12,15 +12,21 @@
       <a-input-search v-model="searchKey" placeholder="input search text" style="width: 200px" @search="onSearch" />
     </div>
     <div class="no-wrap">
-      <a-button type="link">
-        <nuxt-link @click="loginout" to="/signpage">{{logined?'退出':'登录'}}</nuxt-link>
+      <a-button v-if="!logined" type="link">
+        <!-- <nuxt-link @click="loginout" to="/signpage">
+          登录
+        </nuxt-link> -->
+        <PersonInfo />
       </a-button>
+
     </div>
   </div>
 </template>
 
 <script>
+import PersonInfo from '@/components/PersonInfo'
 export default {
+  components: { PersonInfo },
   data() {
     return {
       searchKey: '',
@@ -41,6 +47,10 @@ export default {
         {
           path: '/hotel',
           title: '酒店',
+        },
+        {
+          path: '/ticket',
+          title: '机票',
         },
       ],
     }
@@ -70,6 +80,9 @@ export default {
 <style scoped>
 .no-wrap {
   white-space: nowrap;
+}
+.ant-btn {
+  width: 80px;
 }
 #navbar {
   font-size: 18px;

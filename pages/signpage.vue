@@ -11,7 +11,7 @@
       <div class="icon">
         <a-space size="large">
           <a-icon class="icon" type="qq" />
-          <a-icon type="qq" />
+          <a-icon class="icon" type="wechat" />
         </a-space>
       </div>
     </div>

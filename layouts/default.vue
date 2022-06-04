@@ -165,4 +165,8 @@ body {
 .list li:hover {
   background-color: #d7cbcb;
 }
+* {
+  padding: 0;
+  margin: 0;
+}
 </style>
