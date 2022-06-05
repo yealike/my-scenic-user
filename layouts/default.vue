@@ -8,12 +8,12 @@
     <!-- 主题显示区域 -->
 
     <!-- 底部组件 -->
-    <footer class="footer">
+    <!-- <footer class="footer">
       <div class="contact">
         <h3>联系作者</h3>
         <img style="width: 100px;" src="~/static/wechat.jpg" alt="联系作者">
       </div>
-    </footer>
+    </footer> -->
   </div>
 </template>
 <script>

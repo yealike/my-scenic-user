@@ -21,7 +21,11 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '@/plugins/antd.js' }, { src: '@/plugins/vuex.js' }],
+  plugins: [
+    { src: '@/plugins/antd.js' },
+    { src: '@/plugins/vuex.js' },
+    { src: '@/plugins/amap.js' },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

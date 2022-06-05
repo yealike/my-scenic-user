@@ -1,6 +1,7 @@
 <template>
-  <div @click="toggle" class="person-info">
-    <!-- <ul class="flot" :class="{'show':show}">
+  <nuxt-link to="/person/self">
+    <div @click="toggle" class="person-info">
+      <!-- <ul class="flot" :class="{'show':show}">
       <li>个人资料</li>
       <li>历史记录</li>
       <li>
@@ -9,7 +10,8 @@
         </nuxt-link>
       </li>
     </ul> -->
-  </div>
+    </div>
+  </nuxt-link>
 </template>
 
 <script>

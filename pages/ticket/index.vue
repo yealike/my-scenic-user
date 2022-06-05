@@ -2,7 +2,7 @@
   <div class="ticket">
     <selectTicket class="search" />
     <a-row class="list">
-      <a-col :span="8">
+      <a-col class="col" :span="8">
         <!-- <h1>胖乎乎</h1> -->
         <ticketPrice class="main" />
         <ticketPrice class="main" />
@@ -10,14 +10,14 @@
         <ticketPrice class="main" />
         <ticketPrice class="main" />
       </a-col>
-      <a-col :span="8">
+      <a-col class="col" :span="8">
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
       </a-col>
-      <a-col :span="8">
+      <a-col class="col" :span="8">
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
@@ -43,16 +43,21 @@ export default {
 </script>
 
 <style scoped>
-.main {
+/* .main {
   width: 400px;
-  /* background-color: #ccc; */
-}
+  background-color: #ccc;
+} */
 .search {
   margin-top: 50px;
 }
 .list {
   margin-top: 50px;
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.col {
+  min-width: 300px;
+  max-width: 400px;
 }
 </style>

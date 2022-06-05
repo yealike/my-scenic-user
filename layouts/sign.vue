@@ -1,7 +1,7 @@
 <template>
-  <a-card class="sign">
+  <div class="sign">
     <nuxt />
-  </a-card>
+  </div>
 </template>
 
 <script>

@@ -31,6 +31,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 300px;
+  max-width: 500px;
 }
 .ticket-top {
   width: 50px;
