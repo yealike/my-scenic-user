@@ -17,6 +17,10 @@
     <cityList />
     <a-row type="flex">
       <a-col flex="800px">
+        <!-- <a-skeleton active />
+        <a-skeleton active />
+        <a-skeleton active />
+        <a-skeleton active /> -->
         <infoCard />
         <infoCard />
         <infoCard />
@@ -122,7 +126,7 @@ export default {
   width: 500px;
   margin-top: 15px;
   height: 150px;
-  background-color: #ccc;
+  /* background-color: #ccc; */
   display: flex;
   justify-content: space-around;
 }

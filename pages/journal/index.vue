@@ -1,5 +1,8 @@
 <template>
+
   <div>
+    <a-skeleton active />
+
     <journalCard />
   </div>
 </template>

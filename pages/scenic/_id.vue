@@ -1,72 +1,74 @@
 <template>
-  <div class="container-lg my-main">
-    <div class="row clearfix">
-      <!-- 页头 -->
-      <div class="col-md-12 column">
-        <div class="page-header">
-          <h1 style="margin-left: 30px;margin-bottom: 20px">
-            {{ scenicInfo.name }}
-          </h1>
+  <div>
+    <a-row class="scenic-card-id" type="flex">
+      <a-col class="map-comment" :flex="4">
+        <div class="map-item">
+
         </div>
-      </div>
-
-      <!-- 景点基本信息 -->
-      <div class="row clearfix">
-        <div class="col-md-8">
-          <img style="width: 100%;height: 400px;border-radius: 10px" :src="scenicInfo.url" :alt="scenicInfo.name">
+        <div class="comments">评论319最热最新</div>
+        <div class="avatar">
+          <img src="" alt="">
         </div>
-        <div class="col-md-4" style="margin-top: 100px">
-          <h3 v-text="scenicInfo.name"></h3>
-          <h4>地址：{{ scenicInfo.position }}</h4>
-          <h4>推荐指数：{{ scenicInfo.star }}</h4>
+        <a-input-search class="input" placeholder="评论内容" enter-button="Search" size="large" @search="onSearch" />
+        <a-comment class="comment-item">
+          <span slot="actions" key="comment-nested-reply-to">Reply to</span>
+          <a slot="author">Han Solo</a>
+          <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
+          <p slot="content">
+            We supply a series of design principles, practical patterns and high quality design resources
+            (Sketch and Axure).
+          </p>
+          <a-comment class="comment-item">
+            <span slot="actions">Reply to</span>
+            <a slot="author">Han Solo</a>
+            <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
+            <p slot="content">
+              We supply a series of design principles, practical patterns and high quality design
+              resources (Sketch and Axure).
+            </p>
+          </a-comment>
+          <a-comment class="comment-item">
+            <span slot="actions">回复</span>
+            <a slot="author">Han Solo</a>
+            <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
+            <p slot="content">
+              We supply a series of design principles, practical patterns and high quality design
+              resources (Sketch and Axure).
+            </p>
+          </a-comment>
+        </a-comment>
+      </a-col>
+      <a-col :flex="2">
+        <div class="scenic-info">
+          <client-only>
+            <el-amap class="amap" vid="amapDemo" :zoom="zoom" :center="center"> </el-amap>
+          </client-only>
         </div>
-      </div>
-    </div>
-
-    <!-- 概述 -->
-    <div>
-      <h3 style="margin: 20px;color: #1BADB6">概述</h3>
-      <div class="my-descript" v-html="descrip.descript"></div>
-      <div style="margin-top: 20px">电话：{{ descrip.tel }}</div>
-      <div>官网：{{ descrip.website }}</div>
-      <div style="margin-bottom: 20px;">开放时间：{{ descrip.opentime }}</div>
-    </div>
-
-    <!-- 门票 -->
-    <div style="margin: 20px">
-      <h3 style="color: #1BADB6">门票</h3>
-      <div v-for="item in priceList">
-        {{ item.description }}--{{ item.price }}
-      </div>
-    </div>
-
-    <!-- 旅游时节 -->
-    <div style="margin: 20px">
-      <h3 style="color: #1BADB6">旅游时节</h3>
-      <div>{{ info.season }}</div>
-    </div>
-
-    <!-- 交通路线 -->
-    <div style="margin: 20px">
-      <h3 style="color: #1BADB6">交通路线</h3>
-      <div v-html="info.traffic"></div>
-    </div>
-
-    <!-- 小贴士 -->
-    <div style="margin: 20px">
-      <h3 style="color: #1BADB6">小贴士</h3>
-      <div v-html="info.tips"></div>
-    </div>
-
-    <div style="margin: 20px">
-      <h3 style="color: #1BADB6;margin-bottom: 20px">评论</h3>
-      <div style="display: flex">
-        <img style="width: 50px;height: 50px;border-radius: 3px;" :src="userInfo.avatar" alt="头像">
-        <el-input type="textarea" :rows="2" placeholder="输入你的评论" style="margin-left: 5px" v-model="comment">
-        </el-input>
-      </div>
-    </div>
-
+        <div class="scenic-info-card">
+          <div class="card-message">
+            <scenicCard class="card" />
+            <div class="message">
+              <div class="title">title</div>
+              message
+            </div>
+          </div>
+          <div class="card-message">
+            <scenicCard class="card" />
+            <div class="message">
+              <div class="title">title</div>
+              message
+            </div>
+          </div>
+          <div class="card-message">
+            <scenicCard class="card" />
+            <div class="message">
+              <div class="title">title</div>
+              message
+            </div>
+          </div>
+        </div>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -77,11 +79,16 @@ import descriptionApi from '@/api/scenic/descriptionApi'
 import priceApi from '@/api/scenic/priceApi'
 import InfoApi from '@/api/scenic/InfoApi'
 import commentApi from '@/api/scenic/commentApi'
-
+import scenicCard from '@/components/card/scenicCard.vue'
 export default {
   name: 'scenic-id',
+  components: {
+    scenicCard,
+  },
   data() {
     return {
+      zoom: 15,
+      center: [125.441458, 43.883363],
       id: this.$route.params.id,
       comment: '',
       scenicInfo: {
@@ -184,15 +191,72 @@ export default {
 </script>
 
 <style scoped>
-.my-main {
-  border-radius: 6px;
-  border: #9a9999 1px solid;
-  padding: 30px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.6);
-  /*background-color: rgba(231, 225, 225, 0.99);*/
+.scenic-card-id {
+  max-width: 1500px;
+  margin: auto;
+  height: 500px;
+  background-color: #ccc;
 }
-
-.my-descript {
-  border-radius: 10px;
+.map-item {
+  height: 500px;
+  width: 100%;
+  /* background-color: #777; */
+  margin-right: 50px;
+}
+.map-comment {
+  max-width: 900px;
+  margin-right: 50px;
+}
+.scenic-info {
+  width: 100%;
+  height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #789;
+}
+.comments {
+  font-size: 18px;
+}
+.avatar {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #456;
+}
+.input {
+  width: 500px;
+}
+.comment-item {
+  max-width: 900px;
+  padding-bottom: 0;
+}
+.comment-item p {
+  height: 80px;
+}
+.scenic-info-card {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  height: 500px;
+  max-width: 500px;
+  /* background-color: #444; */
+}
+.card {
+  height: 200px;
+  margin-top: 10px;
+}
+.card-message {
+  display: flex;
+}
+.message {
+  margin-top: 10px;
+  font-size: 20px;
+  margin-left: 20px;
+}
+.title {
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 </style>

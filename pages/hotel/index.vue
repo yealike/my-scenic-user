@@ -2,6 +2,7 @@
   <div class="htole-container">
     <a-row type="flex">
       <a-col class="htole-main" :flex="4">
+        <!-- <a-skeleton active /> -->
         <General title="chili">
           <template #tool>
             <div>tool</div>
@@ -47,7 +48,9 @@
           <div class="input">
             <a-input placeholder="Basic usage" />
           </div>
+
           <div class="hotle-info-detail">
+            <!-- <a-skeleton active /> -->
             <div class="name">
               "name": "7天连锁酒店(上海宝山路地铁站店)",
             </div>

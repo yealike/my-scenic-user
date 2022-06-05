@@ -3,6 +3,7 @@
     <selectTicket class="search" />
     <a-row class="list">
       <a-col class="col" :span="8">
+        <a-skeleton active />
         <!-- <h1>胖乎乎</h1> -->
         <ticketPrice class="main" />
         <ticketPrice class="main" />
@@ -11,6 +12,7 @@
         <ticketPrice class="main" />
       </a-col>
       <a-col class="col" :span="8">
+        <a-skeleton active />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
@@ -18,6 +20,7 @@
         <ticketPrice class="main" />
       </a-col>
       <a-col class="col" :span="8">
+        <a-skeleton active />
         <ticketPrice class="main" />
         <ticketPrice class="main" />
         <ticketPrice class="main" />

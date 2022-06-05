@@ -78,7 +78,7 @@ export default {
   height: 200px;
   border-radius: 20px;
   background-color: rgba(255, 255, 255, 0.467);
-  box-shadow: 5px 5px 15px #ccc;
+  box-shadow: 5px 5px 5px rgb(237, 235, 235);
   justify-content: space-around;
   align-items: center;
 }
