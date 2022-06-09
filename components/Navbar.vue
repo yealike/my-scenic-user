@@ -4,21 +4,20 @@
       <span class="logo-icon no-wrap">logo-travel</span>
       <a-menu v-model="current" mode="horizontal">
         <a-menu-item v-for="item in menus" :key="item.path">
-          <nuxt-link :to="item.path">{{item.title}}</nuxt-link>
+          <nuxt-link :to="item.path">{{ item.title }}</nuxt-link>
         </a-menu-item>
       </a-menu>
     </div>
     <div id="search">
-      <a-input-search v-model="searchKey" placeholder="input search text" style="width: 200px" @search="onSearch" />
+      <a-input-search
+        v-model="searchKey"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+      />
     </div>
     <div class="no-wrap">
-      <a-button v-if="!logined" type="link">
-        <!-- <nuxt-link @click="loginout" to="/signpage">
-          登录
-        </nuxt-link> -->
-        <PersonInfo />
-      </a-button>
-
+      <PersonInfo :logined="logined" />
     </div>
   </div>
 </template>
@@ -27,6 +26,9 @@
 import PersonInfo from '@/components/PersonInfo'
 export default {
   components: { PersonInfo },
+  props: {
+    logined: String,
+  },
   data() {
     return {
       searchKey: '',
@@ -48,10 +50,10 @@ export default {
           path: '/hotel',
           title: '酒店',
         },
-        {
-          path: '/ticket',
-          title: '机票',
-        },
+        // {
+        //   path: '/ticket',
+        //   title: '机票',
+        // },
       ],
     }
   },
@@ -64,14 +66,6 @@ export default {
         //清除用户消息
       }
       return
-    },
-  },
-  created() {
-    // this.$store.commit('login')
-  },
-  computed: {
-    logined() {
-      return this.$store.getters.getLogined
     },
   },
 }

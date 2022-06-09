@@ -1,15 +1,15 @@
 <template>
   <div class="ticketPrice">
-    <div class="ticket-top">1</div>
+    <div class="ticket-top">{{top}}</div>
     <div class="ticket-img">
-      <img src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" :alt="title">
+      <img :src="url" :alt="title">
     </div>
     <div class="tick-info">
-      <div class="fromto">890 to jjjj</div>
-      <div>time</div>
+      <div class="fromto">{{title}}</div>
+      <div>{{time}}</div>
     </div>
     <div class="Price">
-      <div>530$</div>
+      <div>{{price}}$</div>
     </div>
   </div>
   </div>
@@ -18,8 +18,11 @@
 <script>
 export default {
   props: {
-    url: '',
-    title: '',
+    url:String,
+    title:String,
+    time:String,
+    top:Number,
+    price:Number
   },
 }
 </script>

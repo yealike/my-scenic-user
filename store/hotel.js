@@ -2,7 +2,17 @@ export default {
   state: () => ({
     Id: '',
     hotleName: '',
-    possition: {},
+    possition: {
+      latitude: '',
+      longitude: '',
+    },
+    address: '',
+    price: '',
+    score: '',
+    brand: '',
+    city: '',
+    start: '',
+    business: '',
   }),
   mutations: {
     setID(state, payload) {

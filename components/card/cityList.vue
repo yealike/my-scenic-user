@@ -1,23 +1,6 @@
 <template>
   <ul class="citylist">
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
-    <li>长春</li>
-    <li>经济</li>
-    <li>看看</li>
+    <li v-for="item in citylist" :key="item.id">{{ item }}</li>
   </ul>
 </template>
 
@@ -25,6 +8,13 @@
 export default {
   props: {
     citylist: [],
+  },
+  methods: {
+    //获取list
+    fetchCityList() {},
+  },
+  created() {
+    this.fetchCityList()
   },
 }
 </script>

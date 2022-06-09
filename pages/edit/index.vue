@@ -1,82 +1,100 @@
 <template>
-  <div class="container-md container-lg" style="border: #4e4e4e 1px solid;border-radius: 5px">
+  <div
+    class="container-md container-lg"
+    style="border: #4e4e4e 1px solid; border-radius: 5px"
+  >
     <div class="create container-md container-lg">
-      <h1>编写新的作品</h1>
-
-      <div class="create-title">
-
-        <el-form :model="articalInfo" status-icon ref="ruleForm" label-width="100px">
-          <el-form-item label="文章标题">
-            <el-input type="text" v-model="articalInfo.title" placeholder="输入文章标题" autocomplete="off"></el-input>
-          </el-form-item>
-
-          <el-form-item label="文章封面">
-            <el-image style="border-radius: 5px;width: 150px;height: 100px;" fit="fit" :src="articalInfo.cover!=''?articalInfo.cover:'http://localhost:3000/R-C.jpg'">
-            </el-image>
-            <!-- 图片上传组件 -->
-            <el-upload style="display: inline-block;margin-left: 10px;vertical-align: bottom;" :action="imageUrl" list-type="picture-card" :on-success="uploadImage">
-              <i class="el-icon-plus"></i>
-            </el-upload>
-          </el-form-item>
-
-        </el-form>
-      </div>
-
-      <t-editor v-model="articalInfo.content" :height="800"></t-editor>
-      <el-button type="success" id="submitBtn" style="margin: 20px" @click="submitData">提交</el-button>
-
+      <h1 class="edit-title">编写新的作品</h1>
+      <a-form
+        :form="form"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 12 }"
+        @submit="handleSubmit"
+      >
+        <a-form-item label="标题">
+          <a-input v-model="articalInfo.title" />
+        </a-form-item>
+        <a-form-item label="封面">
+          <a-upload
+            name="avatar"
+            list-type="picture-card"
+            class="avatar-uploader"
+            :show-upload-list="false"
+            action="http://192.168.15.54:8001/scenic/upload/image"
+            @change="handleChange"
+          >
+            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+            <div v-else>
+              <a-icon :type="'plus'" />
+              <div class="ant-upload-text">Upload</div>
+            </div>
+          </a-upload>
+        </a-form-item>
+        <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+          <t-editor v-model="articalInfo.content" :height="800"></t-editor>
+        </a-form-item>
+        <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+          <a-button type="primary" html-type="submit"> 发布Log </a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>
 
 <script>
 import TEditor from '@/components/TEditor'
-import articleApi from '@/api/article/article'
-
+import articleApi from '@/api/article.js'
+function getBase64(img, callback) {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 export default {
   name: 'index',
   components: { TEditor },
   data() {
     return {
+      formLayout: 'horizontal',
+      form: this.$form.createForm(this, { name: 'coordinated' }),
       articalInfo: {
-        id: '',
+        id: new Date().getTime(),
         userId: '',
         title: '',
         cover: '',
         content: '',
       },
-      imageUrl: 'http://localhost:88/scenic/scenic/oss',
+      imageUrl: '',
     }
   },
   methods: {
-    submitData() {
-      const userInfo = localStorage.getItem('userInfo')
-      const userJson = JSON.parse(userInfo)
-      // 如果查不到用户信息，就不发送网络请求
-      this.articalInfo.userId = userJson.id
-      // console.log(userJson)
+    handleChange(info) {
+      if (info.file.status === 'uploading') {
+        this.loading = true
+        return
+      }
+      if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, (imageUrl) => {
+          this.imageUrl = imageUrl
+          this.loading = false
+        })
+        console.log(info.file.response)
+      }
+    },
+    async handleSubmit(e) {
+      this.articalInfo.userId = JSON.parse(
+        window.localStorage.getItem('user')
+      ).id
+      e.preventDefault()
+      console.log(this.articalInfo)
       if (this.articalInfo.userId == '') {
         this.$message.error('请先登录')
       } else {
-        articleApi
-          .addOneArticle(this.articalInfo)
-          .then((resp) => {
-            this.$message({
-              type: 'success',
-              message: '保存成功',
-            })
-            // 发送成功之后，跳转到个人中心
-            window.location.href = '/member'
-          })
-          .catch((err) => {
-            this.$message.error('保存失败！')
-          })
+        await articleApi.addOneArticle(this.articalInfo)
+        //提示
+        // 发送成功之后，跳转到个人中心
+        this.$router.push('/person/self')
       }
-    },
-    // 图片上传成功之后的回调
-    uploadImage(resp, file) {
-      this.articalInfo.cover = resp.data.data.url
-      console.log('file==>', file)
     },
   },
 }
@@ -114,4 +132,8 @@ export default {
 /*  height: 60px;*/
 /*  font-size: 30px;*/
 /*}*/
+.edit-title {
+  font-weight: 800;
+  text-align: center;
+}
 </style>

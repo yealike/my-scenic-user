@@ -2,68 +2,99 @@
   <div>
     <a-row class="scenic-card-id" type="flex">
       <a-col class="map-comment" :flex="4">
-        <div class="map-item">
-
+        <div>
+          <div>
+            <img :src="scenic.url" alt="" />
+          </div>
+          <div>
+            {{ information.season }}
+          </div>
+          <div v-html="information.traffic"></div>
+        </div>
+        <div class="s-price">
+          <div v-for="item in priceList" :key="item.id" class="scenic-price">
+            <div class="title">{{ item.price }}</div>
+            <div class="price">{{ item.description }}</div>
+          </div>
         </div>
         <div class="comments">评论319最热最新</div>
         <div class="avatar">
-          <img src="" alt="">
+          <img :src="user.avatar" />
         </div>
-        <a-input-search class="input" placeholder="评论内容" enter-button="Search" size="large" @search="onSearch" />
-        <a-comment class="comment-item">
-          <span slot="actions" key="comment-nested-reply-to">Reply to</span>
-          <a slot="author">Han Solo</a>
-          <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
-          <p slot="content">
-            We supply a series of design principles, practical patterns and high quality design resources
-            (Sketch and Axure).
-          </p>
-          <a-comment class="comment-item">
-            <span slot="actions">Reply to</span>
-            <a slot="author">Han Solo</a>
-            <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
+        <a-input-search
+          id="reply"
+          class="input"
+          :placeholder="reply.name"
+          enter-button="发送"
+          size="large"
+          v-model="replyComment"
+          @search="onComment"
+        />
+        <div class="comment-bg">
+          <a-comment
+            v-for="commentItem in commentList"
+            :key="commentItem.id"
+            class="comment-item"
+          >
+            <span slot="actions">
+              <span key="comment-nested-reply-to" @click="replyTo(commentItem)">
+                <a href="#reply">回复</a>
+              </span>
+              <!-- <span class="mar-left" @click="showChildComment(commentItem)">
+              展开</span
+            > -->
+            </span>
+            <a slot="author">{{ commentItem.username }}</a>
+            <a-avatar
+              @click="gotoPersonInfo(commentItem.userId)"
+              slot="avatar"
+              :src="commentItem.avatar"
+            />
             <p slot="content">
-              We supply a series of design principles, practical patterns and high quality design
-              resources (Sketch and Axure).
+              {{ commentItem.content }}
             </p>
+            <a-comment
+              v-for="child in commentItem.children"
+              :key="child.id"
+              class="comment-item"
+            >
+              <a slot="author">{{ child.username }}</a>
+              <a-avatar
+                slot="avatar"
+                @click="gotoPersonInfo(child.userId)"
+                :src="child.avatar"
+              />
+              <p slot="content">
+                {{ child.content }}
+              </p>
+            </a-comment>
           </a-comment>
-          <a-comment class="comment-item">
-            <span slot="actions">回复</span>
-            <a slot="author">Han Solo</a>
-            <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="Han Solo" />
-            <p slot="content">
-              We supply a series of design principles, practical patterns and high quality design
-              resources (Sketch and Axure).
-            </p>
-          </a-comment>
-        </a-comment>
+        </div>
       </a-col>
       <a-col :flex="2">
         <div class="scenic-info">
           <client-only>
-            <el-amap class="amap" vid="amapDemo" :zoom="zoom" :center="center"> </el-amap>
+            <el-amap class="amap" vid="amapDemo" :zoom="zoom" :center="center">
+            </el-amap>
           </client-only>
         </div>
         <div class="scenic-info-card">
-          <div class="card-message">
-            <scenicCard class="card" />
+          <div
+            v-for="scenicItem in scenicList"
+            :key="scenicItem.id"
+            class="card-message"
+          >
+            <scenicCard
+              :name="scenicItem.name"
+              :star="scenicItem.star"
+              :url="scenicItem.url"
+              @click.native="gotoDetail(scenicItem.id)"
+              class="card"
+            />
             <div class="message">
-              <div class="title">title</div>
-              message
-            </div>
-          </div>
-          <div class="card-message">
-            <scenicCard class="card" />
-            <div class="message">
-              <div class="title">title</div>
-              message
-            </div>
-          </div>
-          <div class="card-message">
-            <scenicCard class="card" />
-            <div class="message">
-              <div class="title">title</div>
-              message
+              <div class="title">{{ scenicItem.name }}</div>
+              <div>{{ scenicItem.position }}</div>
+              <div>{{ scenicItem.cityName }}</div>
             </div>
           </div>
         </div>
@@ -73,12 +104,7 @@
 </template>
 
 <script>
-import scenicApi from '@/api/scenic/scenicApi'
-import cityApi from '@/api/scenic/cityApi'
-import descriptionApi from '@/api/scenic/descriptionApi'
-import priceApi from '@/api/scenic/priceApi'
-import InfoApi from '@/api/scenic/InfoApi'
-import commentApi from '@/api/scenic/commentApi'
+import scenicApi from '@/api/scenic'
 import scenicCard from '@/components/card/scenicCard.vue'
 export default {
   name: 'scenic-id',
@@ -87,105 +113,114 @@ export default {
   },
   data() {
     return {
+      user: {},
       zoom: 15,
       center: [125.441458, 43.883363],
       id: this.$route.params.id,
       comment: '',
-      scenicInfo: {
-        cityId: '',
-        name: '',
-        position: '',
-        url: '',
-        star: '',
-        adPrice: '',
-      },
-      descrip: {
-        id: '',
-        descript: '',
-        opentime: '',
-        tel: '',
-        website: '',
-      },
       priceList: [],
-      info: {
-        season: '',
-        traffic: '',
-        tips: '',
-      },
-      userInfo: {
-        id: '',
-        avatar: '',
-        username: '',
-        email: '',
-      },
       commentList: [],
+      scenicList: [],
+      scenic: {},
+      reply: {
+        name: '回复内容',
+      },
+      replyComment: '',
+      information: {},
     }
   },
   created() {},
   mounted() {
-    let str = localStorage.getItem('userInfo')
-    if (str == '' || str == null || str == undefined) {
-      console.log('localStorage--userInfo不存在,用户可能未登录==>scenic/id')
-    } else {
-      this.userInfo = JSON.parse(str)
-    }
-
-    this.getScenicInfo()
-    this.getDescription()
+    this.fetchInfo()
     this.getPrice()
-    this.getInfo()
+    this.getScenicList()
+    this.getUser()
     this.getComments()
+    this.fetchInformation()
   },
   methods: {
-    // 获取评论列表
-    getComments() {
-      commentApi.getOneLevelCommentList(1, 10).then((resp) => {
-        this.commentList = resp.data.data.commentInfo.records
-        // console.log(resp.data.data.commentInfo.records)
-      })
+    getUser() {
+      const user = window.localStorage.getItem('user')
+      this.user = JSON.parse(user)
     },
-    // 根据景点id查询景点信息
-    getInfo() {
-      InfoApi.getInfoByScenicId(this.id).then((resp) => {
-        this.info.season = resp.data.data.information.season
-        this.info.traffic = resp.data.data.information.traffic
-        this.info.tips = resp.data.data.information.tips
-      })
+    //获取景点信息
+    async fetchInfo() {
+      const id = this.$route.params.id
+      const { data: res } = await scenicApi.getScenicInfoById(id)
+      this.scenic = res.scenic
+      console.log(this.scenic)
+      this.latitude = res.scenic.latitude
+      this.longitude = res.scenic.longitude
+    },
+    // 获取评论列表
+    async getComments() {
+      const id = this.$route.params.id
+      const { data: res } = await scenicApi.fetchAllComment(1, 10, '景点', 1)
+      this.commentList = res.records
+      console.log('%%', res)
+    },
+    //景点列表
+    async getScenicList() {
+      const { data: res } = await scenicApi.getScenicList(1, 5)
+      console.log(132, res)
+      this.scenicList = res.records
     },
     //获取价格列表
-    getPrice() {
-      priceApi.getPriceList(this.id).then((resp) => {
-        this.priceList = resp.data.data.priceList
-      })
+    async getPrice() {
+      const id = this.$route.params.id
+      const { data: res } = await scenicApi.getPriceList(id)
+      this.priceList = res.priceList.slice(0, 3)
     },
-    // 根据id获取景点信息
-    getScenicInfo() {
-      scenicApi.getScenicInfoById(this.id).then((resp) => {
-        this.scenicInfo.name = resp.data.data.scenic.name
-        this.scenicInfo.cityId = resp.data.data.scenic.cityId
-        this.scenicInfo.position = resp.data.data.scenic.position
-        this.scenicInfo.url = resp.data.data.scenic.url
-        this.scenicInfo.star = resp.data.data.scenic.star
-        this.scenicInfo.adPrice = resp.data.data.scenic.adPrice
-      })
+    //回复
+    replyTo(item) {
+      this.reply.name = item.username
+      this.reply.id = item.userId
+      console.log(this.reply)
+      if (this.reply.id) {
+      } else {
+      }
     },
-    // 查询城市名称
-    getCity() {
-      cityApi.getCityNameById(this.scenicInfo.cityId).then((resp) => {
-        console.log(resp)
-        console.log(this.scenicInfo)
-      })
+    //获取旅游信息
+    async fetchInformation() {
+      const id = this.$route.params.id
+      const { data: res } = await scenicApi.fetchInformation(id)
+      this.information = res.information
     },
-    // 根据景点id查询描述信息
-    getDescription() {
-      descriptionApi.getDescription(this.id).then((resp) => {
-        this.descrip.id = resp.data.data.description.id
-        this.descrip.descript = resp.data.data.description.description
-        this.descrip.tel = resp.data.data.description.tel
-        this.descrip.opentime = resp.data.data.description.opentime
-        this.descrip.website = resp.data.data.description.website
+    async onComment() {
+      const res = await scenicApi.addComment({
+        commentLevel: 0,
+        content: this.replyComment,
+        gmtCreate: '',
+        id: '',
+        isDelete: 0,
+        isTop: 0,
+        parentCommentId: '',
+        parentCommentUserId: '',
+        praiseNum: 0,
+        replayCommentId: '',
+        replayCommentUserId: '',
+        scenicId: this.$route.params.id,
+        scenicName: this.scenic.name,
+        userId: this.user.id,
+        userName: this.user.username,
       })
+      console.log(res)
+      if (res.code == 20000) {
+        //操作成功
+      }
     },
+    gotoPersonInfo(id) {
+      this.$router.push(`/person/${id}`)
+    },
+    //跳转详情
+    gotoDetail(id) {
+      this.$router.push(`/scenic/${id}`)
+    },
+  },
+  computed: {
+    // user() {
+    //   return this.$store.getters.getUserInfo
+    // },
   },
 }
 </script>
@@ -195,7 +230,7 @@ export default {
   max-width: 1500px;
   margin: auto;
   height: 500px;
-  background-color: #ccc;
+  /* background-color: #ccc; */
 }
 .map-item {
   height: 500px;
@@ -203,9 +238,17 @@ export default {
   /* background-color: #777; */
   margin-right: 50px;
 }
+.map-item .auto {
+  height: auto;
+}
 .map-comment {
   max-width: 900px;
   margin-right: 50px;
+  /* background-color: #eee; */
+}
+.s-price {
+  display: flex;
+  justify-content: space-between;
 }
 .scenic-info {
   width: 100%;
@@ -224,6 +267,11 @@ export default {
   border-radius: 50%;
   overflow: hidden;
   background-color: #456;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .input {
   width: 500px;
@@ -258,5 +306,28 @@ export default {
 .title {
   font-weight: 800;
   margin-bottom: 10px;
+  font-size: 20px;
+}
+.mar-left {
+  margin-left: 20px;
+}
+.scenic-price {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 200px;
+  height: 80px;
+  margin: 5px 0;
+  background: url('@/assets/images/越王楼.jpg');
+  background-size: cover;
+  border-radius: 10px;
+  color: #fff;
+}
+.comment-bg {
+  background-color: #eee;
+  color: #000;
+  border-radius: 20px;
 }
 </style>

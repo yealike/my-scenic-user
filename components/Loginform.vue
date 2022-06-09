@@ -1,24 +1,45 @@
 <template>
   <a-form layout="horizontal" :form="form" @submit="handleSubmit">
     <h3>登录</h3>
-    <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
-      <a-input size="large" v-decorator="[
+    <a-form-item
+      :validate-status="userNameError() ? 'error' : ''"
+      :help="userNameError() || ''"
+    >
+      <a-input
+        size="large"
+        v-decorator="[
           'email',
           { rules: [{ required: true, message: 'Please input your email!' }] },
-        ]" placeholder="Email">
-        <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
+        ]"
+        placeholder="Email"
+      >
+        <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
-    <a-form-item :validate-status="passwordError() ? 'error' : ''" :help="passwordError() || ''">
-      <a-input size="large" v-decorator="[
+    <a-form-item
+      :validate-status="passwordError() ? 'error' : ''"
+      :help="passwordError() || ''"
+    >
+      <a-input
+        size="large"
+        v-decorator="[
           'password',
-          { rules: [{ required: true, message: 'Please input your Password!' }] },
-        ]" type="password" placeholder="Password">
-        <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
+          {
+            rules: [{ required: true, message: 'Please input your Password!' }],
+          },
+        ]"
+        type="password"
+        placeholder="Password"
+      >
+        <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
     <a-form-item>
-      <a-button type="primary" html-type="submit" @click="submitLogin" :disabled="hasErrors(form.getFieldsError())">
+      <a-button
+        type="primary"
+        html-type="submit"
+        :disabled="hasErrors(form.getFieldsError())"
+      >
         Log in
       </a-button>
     </a-form-item>
@@ -27,8 +48,9 @@
 
 <script>
 import '~/assets/iconfont/iconfont.css'
-import loginApi from '@/api/member/loginApi'
+import loginApi from '@/api/user.js'
 import cookie from 'js-cookie'
+
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some((field) => fieldsError[field])
 }
@@ -68,22 +90,32 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          this.submitLogin(user)
+          this.submitLogin(values)
         }
       })
     },
-    // 登录方法-->登录返回token
+    async setInfo() {
+      const { data: res } = await loginApi.getLoginUserInfo()
+      const user = res.member
+      console.log('89', user)
+      window.localStorage.setItem('user', JSON.stringify(user))
+      cookie.set('user', JSON.stringify(user))
+    },
     submitLogin(user) {
       loginApi.login(user).then((resp) => {
+        this.setInfo()
         // 登录成功
-        if (resp.data.success) {
+        if (resp.success) {
           // 把token存到cookie里面
           // 参数1：cookie名称   参数2：cookie值   参数3：作用范围
-          cookie.set('travel_token', resp.data.data.token, {
+          cookie.set('travel_token', resp.data.token, {
             domain: 'localhost',
           })
+          cookie.set('logined', 'true')
+          // this.$store.commit('login')
+          window.localStorage.setItem('token', resp.data.token)
           // 跳转页面
-          window.location.href = '/'
+          this.$router.push('/')
         } else {
           this.$message.error(resp.data.msg)
         }

@@ -3,7 +3,7 @@ import cookie from 'js-cookie'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'http://localhost:88',
+  baseURL: 'http://192.168.15.54:88/',
   timeout: 20000,
 })
 
@@ -11,7 +11,7 @@ const service = axios.create({
 service.interceptors.request.use(
   function (config) {
     // 在发送请求之前做些什么
-    const travelToken = cookie.get('travel_token')
+    const travelToken = window.localStorage.getItem('token')
     if (travelToken) {
       config.headers['token'] = travelToken
     }
@@ -24,11 +24,11 @@ service.interceptors.request.use(
 )
 
 // 添加响应拦截器
-axios.interceptors.response.use(
+service.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
-    return response
+    return response.data
   },
   function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。

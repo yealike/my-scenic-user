@@ -1,7 +1,7 @@
 <template>
   <div class="Gengral">
     <div class="header">
-      <span class="title">Title</span>
+      <span class="title">{{ title }}</span>
       <slot name="tool"></slot>
     </div>
     <slot></slot>
@@ -12,7 +12,7 @@
 export default {
   name: 'General',
   props: {
-    title: 'title',
+    title: String,
   },
 }
 </script>
@@ -37,6 +37,6 @@ export default {
 }
 .Gengral {
   margin-bottom: 50px;
-  background-color: #111;
+  /* background-color: #111; */
 }
 </style>

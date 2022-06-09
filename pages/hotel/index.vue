@@ -2,65 +2,57 @@
   <div class="htole-container">
     <a-row type="flex">
       <a-col class="htole-main" :flex="4">
-        <!-- <a-skeleton active /> -->
-        <General title="chili">
+        <a-skeleton v-if="hotleListIsEmpty" active />
+        <General title="推荐" v-if="!hotleListIsEmpty">
           <template #tool>
-            <div>tool</div>
+            <!-- <div>tool</div> -->
           </template>
           <template #default>
             <div class="card-list">
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-            </div>
-          </template>
-        </General>
-        <General title="chili">
-          <template #tool>
-            <div>tool</div>
-          </template>
-          <template #default>
-            <div class="card-list">
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
-              <hotelCard />
+              <hotelCard
+                v-for="item in hotleList"
+                :key="item.name"
+                :address="item.address"
+                :title="item.name"
+                :url="item.pic"
+                :price="item.price"
+                :id="item.id"
+                @click.native="searchById(item.id)"
+              />
             </div>
           </template>
         </General>
       </a-col>
       <a-col class="htole-banner" :flex="2">
-        <a-affix :offset-top="top">
+        <a-affix>
           <div class="banner-img">
-            <!-- <img class="img" src="@/assets/images/login-bg.jpg" alt=""> -->
+            <img class="img" src="@/assets/images/login-bg.jpg" alt="" />
             <client-only>
-              <el-amap class="amap" vid="amapDemo" :zoom="zoom" :center="center"> </el-amap>
+              <el-amap
+                class="amap"
+                vid="amapDemo"
+                :zoom="zoom"
+                :center="center"
+              >
+              </el-amap>
             </client-only>
           </div>
           <div>
-            <a-button class="search-btn">search</a-button>
+            <a-button @click="search" class="search-btn">search</a-button>
           </div>
           <div class="input">
-            <a-input placeholder="Basic usage" />
+            <a-input v-model="searchKey" placeholder="Basic usage" />
           </div>
-
-          <div class="hotle-info-detail">
-            <!-- <a-skeleton active /> -->
-            <div class="name">
-              "name": "7天连锁酒店(上海宝山路地铁站店)",
-            </div>
-            <div class="address">"address": "静安交通路40号",</div>
-            <div class="price">"price": 336,</div>
-            <div class="score">"score": 37,</div>
-            <div class="brand"> "brand": "7天酒店",</div>
-            <div class="city">"city": "上海",</div>
-            <div class="starname">"starName": "二钻",</div>
-            <div class="business">"business": "四川北路商业区",</div>
+          <a-skeleton v-if="!currentHotel" active />
+          <div v-if="currentHotel" class="hotle-info-detail">
+            <div class="name">{{ this.currentHotel.name }}</div>
+            <div class="address">{{ this.currentHotel.address }}</div>
+            <div class="price">{{ this.currentHotel.price }}</div>
+            <div class="score">{{ this.currentHotel.score }}</div>
+            <div class="brand">{{ this.currentHotel.brand }}</div>
+            <div class="city">{{ this.currentHotel.city }}</div>
+            <div class="starname">{{ this.currentHotel.starname }}</div>
+            <div class="business">{{ this.currentHotel.business }}</div>
           </div>
         </a-affix>
       </a-col>
@@ -71,7 +63,8 @@
 <script>
 import General from '@/components/container/General.vue'
 import hotelCard from '@/components/card/hotelCard.vue'
-
+import hotle from '@/api/hotel'
+import { scrollBottom } from '@/utils/scrollBottom'
 export default {
   layout: 'default',
   components: {
@@ -82,7 +75,46 @@ export default {
     return {
       zoom: 15,
       center: [125.441458, 43.883363],
+      hotleList: [],
+      currentHotel: {},
+      searchKey: '',
+      page: 0,
+      first: true,
     }
+  },
+  methods: {
+    async getAllHotel() {
+      this.page++
+      const { data: res } = await hotle.getPart(this.page, 10)
+      this.hotleList.push(...res.records)
+      if (this.first) {
+        this.currentHotel = this.hotleList[0]
+        this.first = false
+      }
+    },
+    search() {
+      console.log(this.searchKey)
+      //
+    },
+    async searchById(id) {
+      const { data: res } = await hotle.getById(id)
+      this.currentHotel = res.hotel
+    },
+    scroll() {
+      scrollBottom(this.getAllHotel)
+    },
+  },
+  mounted() {
+    this.getAllHotel()
+    window.addEventListener('scroll', this.scroll)
+  },
+  destroyed() {
+    window.removeEventListener('scroll', this.scroll)
+  },
+  computed: {
+    hotleListIsEmpty() {
+      return this.hotleList.length <= 0
+    },
   },
 }
 </script>
@@ -95,7 +127,7 @@ export default {
 .main-1 {
   text-align: right;
   height: 300px;
-  background-color: rgb(97, 27, 27);
+  /* background-color: rgb(97, 27, 27); */
 }
 .htole-container {
   min-width: 1180px;
@@ -105,17 +137,20 @@ export default {
 }
 .htole-main {
   /* height: 800px; */
-  max-width: 900px;
+  width: 900px;
   /* overflow: auto; */
-  background: #000;
+  /* background: #000; */
 }
 .card-list {
   display: flex;
   flex-wrap: wrap;
-
-  background-color: #fff;
   justify-content: space-between;
   align-items: flex-start;
+}
+.htole-banner {
+  position: relative;
+  width: 500px;
+  margin-top: 50px;
 }
 .banner-img {
   width: 450px;
@@ -136,7 +171,7 @@ export default {
 .search-btn {
   position: absolute;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-60%, -50%);
   width: 200px;
   height: 50px;
   font-size: 20px;

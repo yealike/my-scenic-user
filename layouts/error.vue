@@ -1,12 +1,11 @@
 <template>
   <div id="error">
-    <img id="error-img" src="@/assets/images/error.png" alt="" srcset="">
+    <img id="error-img" src="@/assets/images/error.png" alt="" srcset="" />
     <div id="message">
-      <h1>{{error.statusCode}}</h1>
-      <h5>{{error.message}}</h5>
+      <h1>{{ error.statusCode }}</h1>
+      <h5>{{ error.message }}</h5>
     </div>
   </div>
-
 </template>
 
 <script>

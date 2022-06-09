@@ -1,21 +1,25 @@
 <template>
-  <div class="signpages">
-    <div class="signpages-item sign-component">
-      <div class="transition">
-        <Transition name="slide-fade">
-          <component :is="show"></component>
-        </Transition>
-        <h5 @click="toggle" class="link">{{isLogin?'注册账号':'去登陆'}}</h5>
+  <div class="center">
+    <div class="signpages">
+      <div class="signpages-item sign-component">
+        <div class="transition">
+          <Transition name="slide-fade">
+            <component :is="show"></component>
+          </Transition>
+          <h5 @click="toggle" class="link">
+            {{ isLogin ? '注册账号' : '去登陆' }}
+          </h5>
+        </div>
+        <a-divider>or</a-divider>
+        <div class="icon">
+          <a-space size="large">
+            <a-icon class="icon" type="qq" />
+            <a-icon class="icon" type="wechat" />
+          </a-space>
+        </div>
       </div>
-      <a-divider>or</a-divider>
-      <div class="icon">
-        <a-space size="large">
-          <a-icon class="icon" type="qq" />
-          <a-icon class="icon" type="wechat" />
-        </a-space>
-      </div>
+      <div class="signpages-item sign-image"></div>
     </div>
-    <div class="signpages-item sign-image"></div>
   </div>
 </template>
 
@@ -45,6 +49,11 @@ export default {
 </script>
 
 <style>
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .signpages {
   margin: auto;
   margin-top: 50px;
@@ -67,6 +76,7 @@ export default {
   justify-content: center;
   align-items: center;
   border: 1px solid rgba(200, 200, 200, 0.5);
+  overflow: hidden;
 }
 .sign-component .transition {
   height: 360px;

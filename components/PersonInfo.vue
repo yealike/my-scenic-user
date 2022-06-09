@@ -1,35 +1,36 @@
 <template>
-  <nuxt-link to="/person/self">
-    <div @click="toggle" class="person-info">
-      <!-- <ul class="flot" :class="{'show':show}">
-      <li>个人资料</li>
-      <li>历史记录</li>
-      <li>
-        <nuxt-link @click="loginout" to="/signpage">
-          退出
-        </nuxt-link>
-      </li>
-    </ul> -->
-    </div>
-  </nuxt-link>
+  <div>
+    <nuxt-link v-if="logined" to="/person/self">
+      <div class="person-info">
+        <img :src="user.avatar" alt="" />
+      </div>
+    </nuxt-link>
+    <a-button v-if="!logined" type="link">
+      <nuxt-link to="/signpage"> 登录 </nuxt-link>
+    </a-button>
+  </div>
 </template>
 
 <script>
+import cookie from 'js-cookie'
 export default {
   data() {
     return {
-      show: false,
+      logined: false,
+      user: {},
     }
   },
   methods: {
-    toggle() {
-      console.log(123)
-      this.show = !this.show
-      console.log(this.show)
+    getLogined() {
+      this.logined = cookie.get('logined') == 'true'
     },
-    loginout() {
-      console.log(456)
+    getUser() {
+      this.user = cookie.get('user') ? JSON.parse(cookie.get('user')) : {}
     },
+  },
+  mounted() {
+    this.getLogined()
+    this.getUser()
   },
 }
 </script>
@@ -40,9 +41,14 @@ export default {
   width: 58px;
   height: 30px;
   border-radius: 5px;
-  background: #000;
+  /* background: #000; */
   cursor: pointer;
   position: relative;
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .flot {

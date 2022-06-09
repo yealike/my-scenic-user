@@ -1,13 +1,15 @@
 <template>
-  <div class="person-bg">
+  <div class="person-bg" :style="bgstyle">
     <div class="avatar">
-      <nuxt-link to="/"><img src="@/assets/images/login-bg.jpg" alt=""></nuxt-link>
+      <nuxt-link to="/"><img :src="userInfo.avatar" /></nuxt-link>
     </div>
-    <div class="no-chili">no-chili</div>
-    <a-button class="setting" @click="showSetting">setting</a-button>
-    <div>粉丝:789 关注:897</div>
-    <div class="introduct">百度翻译-200种语言互译、沟通全世界！</div>
-    <div class="tags">
+    <div class="no-chili">{{ userInfo.username }}</div>
+    <a-button v-if="isSelf" class="setting" @click="showSetting">设置</a-button>
+    <a-button v-if="isSelf" class="setting" @click="loginOut">退出</a-button>
+    <a-button v-if="!isSelf" class="setting" @click="follow">关注</a-button>
+    <div>粉丝:{{ userInfo.fans }} 关注:{{ userInfo.focus }}</div>
+    <div class="introduct">{{ userInfo.intro }}</div>
+    <div v-if="isSelf" class="tags">
       <nuxt-link to="/edit">
         <div class="tag">写日记</div>
       </nuxt-link>
@@ -16,102 +18,118 @@
     </div>
     <div class="link">
       <div>
-        <a-icon class="item " type="github" />
+        <a-icon class="item" type="github" />
       </div>
       <div>
-        <a-icon class="item " type="zhihu" />
+        <a-icon class="item" type="zhihu" />
       </div>
     </div>
-    <a-drawer :placement="placement" height width :closable="false" :visible="visible" @close="onClose">
+    <a-drawer
+      :placement="placement"
+      height
+      width
+      :closable="false"
+      :visible="visible"
+      @close="onClose"
+    >
       <div class="form-layout">
-        <a-form class="form-main" v-show="type=='setting'" :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
+        <a-form
+          class="form-main"
+          v-show="type == 'setting'"
+          :form="form"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 12 }"
+          @submit="handleSubmit"
+        >
           <a-row>
             <a-col :span="8">
-              <a-form-item label="Note">
-                <a-input v-decorator="['note', { rules: [{ required: true, message: 'Please input your note!' }] }]" />
+              <a-form-item label="id">
+                <a-input v-model="userInfo.id" disabled />
               </a-form-item>
-              <a-form-item label="Gender">
-                <a-select v-decorator="[
-          'gender',
-          { rules: [{ required: true, message: 'Please select your gender!' }] },
-        ]" placeholder="Select a option and change input text above" @change="handleSelectChange">
-                  <a-select-option value="male">
-                    male
-                  </a-select-option>
-                  <a-select-option value="female">
-                    female
-                  </a-select-option>
-                </a-select>
+              <a-form-item label="username">
+                <a-input v-model="userInfo.username" />
               </a-form-item>
-              <a-form-item label="Gender">
-                <a-select v-decorator="[
-          'gender',
-          { rules: [{ required: true, message: 'Please select your gender!' }] },
-        ]" placeholder="Select a option and change input text above" @change="handleSelectChange">
-                  <a-select-option value="male">
-                    male
-                  </a-select-option>
-                  <a-select-option value="female">
-                    female
-                  </a-select-option>
-                </a-select>
+              <a-form-item label="intro">
+                <a-input v-model="userInfo.intro" />
               </a-form-item>
-              <a-form-item label="Gender">
-                <a-select v-decorator="[
-          'gender',
-          { rules: [{ required: true, message: 'Please select your gender!' }] },
-        ]" placeholder="Select a option and change input text above" @change="handleSelectChange">
-                  <a-select-option value="male">
-                    male
-                  </a-select-option>
-                  <a-select-option value="female">
-                    female
-                  </a-select-option>
-                </a-select>
+              <a-form-item label="birth">
+                <a-date-picker
+                  :defaultValue="userInfo.birth"
+                  @change="changeDate"
+                />
               </a-form-item>
               <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
                 <a-button type="primary" html-type="submit">
-                  Submit
+                  保存修改
                 </a-button>
               </a-form-item>
             </a-col>
             <a-col :span="8">
-              <a-form-item label="Note">
-                <a-input v-decorator="['note', { rules: [{ required: true, message: 'Please input your note!' }] }]" />
-              </a-form-item>
               <a-form-item label="Gender">
-                <a-select v-decorator="[
-          'gender',
-          { rules: [{ required: true, message: 'Please select your gender!' }] },
-        ]" placeholder="Select a option and change input text above" @change="handleSelectChange">
-                  <a-select-option value="male">
-                    male
-                  </a-select-option>
-                  <a-select-option value="female">
-                    female
-                  </a-select-option>
+                <a-select
+                  v-model="G"
+                  placeholder="Select a option and change input text above"
+                  @change="handleSelectChange"
+                >
+                  <a-select-option value="1"> 男 </a-select-option>
+                  <a-select-option value="0"> 女 </a-select-option>
                 </a-select>
               </a-form-item>
+              <!-- <a-form-item label="password">
+                <a-input v-model="userInfo.password" />
+              </a-form-item> -->
             </a-col>
             <a-col :span="8">
-              <a-upload name="avatar" list-type="picture-card" class="avatar-uploader" :show-upload-list="false" action="https://www.mocky.io/v2/5cc8019d300000980a055e76" :before-upload="beforeUpload"
-                @change="handleChange">
-                <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+              头像
+              <a-upload
+                name="avatar"
+                list-type="picture-card"
+                class="avatar-uploader"
+                :show-upload-list="false"
+                action="http://192.168.15.54:8001/scenic/upload/image"
+                :before-upload="beforeAvatarUpload"
+                @change="avatarChange"
+              >
+                <img
+                  v-if="userInfo.avatar"
+                  :src="userInfo.avatar"
+                  alt="avatar"
+                />
                 <div v-else>
-                  <a-icon :type="loading ? 'loading' : 'plus'" />
-                  <div class="ant-upload-text">
-                    Upload
-                  </div>
+                  <a-icon :type="avatarloading ? 'loading' : 'plus'" />
+                  <div class="ant-upload-text">Upload</div>
+                </div>
+              </a-upload>
+              自定义背景
+              <a-upload
+                name="avatar"
+                list-type="picture-card"
+                class="avatar-uploader"
+                :show-upload-list="false"
+                action="#"
+                :before-upload="beforeBGUpload"
+                @change="bgChange"
+              >
+                <img v-if="bgUrl" :src="bgUrl" />
+                <div v-else>
+                  <a-icon :type="bgloading ? 'loading' : 'plus'" />
+                  <div class="ant-upload-text">Upload</div>
                 </div>
               </a-upload>
             </a-col>
           </a-row>
         </a-form>
-        <div v-show="type=='like'">
+        <div v-show="type == 'like'">
           <lickCard url="/url" />
         </div>
-        <div v-show="type=='history'">
-          <lickCard url="/url" />
+        <div v-show="type == 'history'">
+          <lickCard
+            v-for="item in historyList"
+            :key="item.id"
+            :url="item.link"
+            :title="item.title"
+            :tag="item.tag"
+          />
         </div>
       </div>
     </a-drawer>
@@ -120,6 +138,13 @@
 
 <script>
 import lickCard from '@/components/card/lickCard.vue'
+import user from '@/api/user'
+import Cookies from 'js-cookie'
+function getBase64(img, callback) {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 export default {
   layout: 'sign',
   components: {
@@ -127,14 +152,24 @@ export default {
   },
   data() {
     return {
+      //性别
+      G: '',
+
+      form: {},
       placement: 'top',
       visible: false,
       type: 'setting', //setting|history|like|follow
       height: 500,
       width: 400,
 
-      loading: false,
+      bgloading: false,
+      bgUrl: '',
+      avatarloading: false,
+
       imageUrl: '',
+      userInfo: {},
+
+      historyList: [],
     }
   },
   methods: {
@@ -144,6 +179,7 @@ export default {
       this.type = 'setting' //setting|history|like|follow
     },
     showHistory() {
+      this.fetHistory()
       this.placement = 'left'
       this.visible = true
       this.type = 'history' //setting|history|like|follow
@@ -164,15 +200,45 @@ export default {
     onChange(e) {
       this.placement = e.target.value
     },
-    handleChange(info) {
+    beforeAvatarUpload(e) {
+      console.log(e)
+    },
+    avatarChange(info) {
+      if (info.file.status === 'uploading') {
+        this.loading = true
+        return
+      }
+      console.log(info.file.response)
+      if (info.file.status === 'done') {
+        getBase64(info.file.originFileObj, (imageUrl) => {
+          this.imageUrl = imageUrl
+          this.loading = false
+          console.log(imageUrl)
+        })
+      }
+    },
+    beforeBGUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        this.$message.error('You can only upload JPG file!')
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('Image must smaller than 2MB!')
+      }
+      return isJpgOrPng && isLt2M
+    },
+    bgChange(info) {
       if (info.file.status === 'uploading') {
         this.loading = true
         return
       }
       if (info.file.status === 'done') {
+        new Image()
         // Get this url from response in real world.
         getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
+          this.bgUrl = imageUrl
+          window.localStorage.setItem('bgUrl', this.bgUrl)
           this.loading = false
         })
       }
@@ -188,6 +254,78 @@ export default {
       }
       return isJpgOrPng && isLt2M
     },
+    async fetchUserInfo() {
+      const id = this.$route.params.id
+      if (this.isSelf) {
+        const { data: res } = await user.getLoginUserInfo()
+        this.userInfo = res.member
+        this.visible = false
+      } else {
+        //获取查看对象info
+        const { data: res } = await user.getUserInfoById(id)
+        this.userInfo = res.member
+      }
+      this.G = this.userInfo.gender == 1 ? '男' : '女'
+    },
+    async fetHistory() {
+      const { data: res } = await user.getHistory(this.userInfo.id, 1, 10)
+      this.historyList = res.records
+    },
+    follow() {},
+    async handleSubmit(e) {
+      e.preventDefault()
+      // console.log(this.userInfo.birth._i)
+      // const userInfo = this.userInfo
+      console.log(this.userInfo.birth)
+      this.userInfo.birth = this.userInfo.birth._i
+
+      console.log('userInfo', this.userInfo)
+      const { data: res } = await user.updateById(this.userInfo)
+      console.log(res)
+      this.visible = false
+      this.fetchUserInfo()
+    },
+    async handleSelectChange(e) {
+      this.userInfo.gender = e
+      console.log(e)
+      console.log(this.userInfo.gender)
+    },
+    // 退出
+    loginOut() {
+      window.localStorage.clear()
+      this.$router.push('/')
+      this.$store.commit('loginout')
+      Cookies.set('logined', false)
+    },
+    changeDate(e) {
+      const year = e._d.getFullYear()
+      const month = e._d.getMonth() + 1
+      const birth =
+        year +
+        '-' +
+        (month / 10 > 0 ? '0' + month : month) +
+        '-' +
+        (e._d.getDate() / 10 > 0 ? e._d.getDate() : '0' + e._d.getDate())
+      console.log(birth)
+    },
+  },
+  computed: {
+    isSelf() {
+      return this.$route.params.id == 'self'
+    },
+    bgstyle() {
+      return {
+        backgroundImage: this.bgUrl
+          ? `url(${this.bgUrl})`
+          : `url(${require('../../assets/images/login-bg.jpg')})`,
+      }
+    },
+  },
+  mounted() {
+    this.fetchUserInfo()
+    if (window.localStorage.getItem('bgUrl')) {
+      this.bgUrl = window.localStorage.getItem('bgUrl')
+    }
   },
 }
 </script>
@@ -225,6 +363,7 @@ img {
 .setting {
   width: 80px;
   height: 30px;
+  margin-bottom: 10px;
   border: 3px solid #fff;
   background-color: transparent;
   color: #fff;

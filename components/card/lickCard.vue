@@ -1,14 +1,10 @@
 <template>
-  <div class="lick-card">
+  <div @click="goto" class="lick-card">
     <div class="img">
-      <img src="@/assets/images/login-bg.jpg" alt="">
+      <img src="@/assets/images/login-bg.jpg" alt="" />
     </div>
-    <nuxt-link class="title" :to="url">
-      title
-    </nuxt-link>
-    <div class="tag">
-      tag
-    </div>
+    <nuxt-link class="title" :to="url"> {{ title }} </nuxt-link>
+    <div class="tag">{{ tag }}</div>
   </div>
 </template>
 <script>
@@ -17,6 +13,12 @@ export default {
     url: '',
     title: '',
     tag: '',
+    link: '',
+  },
+  methods: {
+    goto() {
+      this.$router.push(this.link)
+    },
   },
 }
 </script>
@@ -27,6 +29,7 @@ export default {
   max-width: 400px;
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 .title {
   flex: 1;

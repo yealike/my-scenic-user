@@ -1,14 +1,19 @@
 <template>
   <div class="scenic-card">
-    <img src="@/assets/images/login-bg.jpg" alt="">
-    <div class="font"> Title
-      chili</div>
-    <div class="star">4</div>
+    <img :src="url" alt="" />
+    <div class="font">{{ name }}</div>
+    <div class="star">{{ star }}</div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    name: String,
+    star: Number,
+    url: String,
+  },
+}
 </script>
 
 <style scoped>

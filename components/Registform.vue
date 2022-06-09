@@ -1,47 +1,94 @@
 <template>
   <a-form layout="horizontal" :form="form" @submit="handleSubmit">
     <h3>注册</h3>
-    <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
-      <a-input size="large" v-decorator="[
+    <a-form-item
+      :validate-status="userNameError() ? 'error' : ''"
+      :help="userNameError() || ''"
+    >
+      <a-input
+        size="large"
+        v-decorator="[
           'username',
-          { rules: [{ required: true, message: 'Please input your username!' }] },
-        ]" placeholder="Username">
-        <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
+          {
+            rules: [{ required: true, message: 'Please input your username!' }],
+          },
+        ]"
+        placeholder="Username"
+      >
+        <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
-    <a-form-item :validate-status="passwordError() ? 'error' : ''" :help="passwordError() || ''">
-      <a-input size="large" v-decorator="[
+    <a-form-item
+      :validate-status="passwordError() ? 'error' : ''"
+      :help="passwordError() || ''"
+    >
+      <a-input
+        size="large"
+        v-decorator="[
           'password',
-          { rules: [{ required: true, message: 'Please input your Password!' }] },
-        ]" type="password" placeholder="Password">
-        <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
+          {
+            rules: [{ required: true, message: 'Please input your Password!' }],
+          },
+        ]"
+        type="password"
+        placeholder="Password"
+      >
+        <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
-    <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
-      <a-input ref="email" size="large" v-decorator="[
+    <a-form-item
+      :validate-status="userNameError() ? 'error' : ''"
+      :help="userNameError() || ''"
+    >
+      <a-input
+        ref="email"
+        size="large"
+        v-decorator="[
           'email',
           { rules: [{ required: true, message: 'Please input your Email!' }] },
-        ]" placeholder="Email">
-        <a-icon slot="prefix" type="mail" style="color:rgba(0,0,0,.25)" />
+        ]"
+        placeholder="Email"
+      >
+        <a-icon slot="prefix" type="mail" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
-    <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
+    <a-form-item
+      :validate-status="userNameError() ? 'error' : ''"
+      :help="userNameError() || ''"
+    >
       <a-input-group>
         <a-col :span="10">
-          <a-input size="large" v-decorator="[
-          'code',
-          { rules: [{ required: true, message: 'Please input your Code!' }] },
-        ]" placeholder="code">
-            <a-icon slot="prefix" type="safety-certificate" style="color:rgba(0,0,0,.25)" />
+          <a-input
+            size="large"
+            v-decorator="[
+              'code',
+              {
+                rules: [{ required: true, message: 'Please input your Code!' }],
+              },
+            ]"
+            placeholder="code"
+          >
+            <a-icon
+              slot="prefix"
+              type="safety-certificate"
+              style="color: rgba(0, 0, 0, 0.25)"
+            />
           </a-input>
         </a-col>
         <a-col :span="6">
-          <a-button class="width80" @click="getCodeFun">{{timemessage}}</a-button>
+          <a-button class="width80" @click="getCodeFun">{{
+            timemessage
+          }}</a-button>
         </a-col>
       </a-input-group>
     </a-form-item>
     <a-form-item>
-      <a-button size="large" type="primary" html-type="submit" :disabled="hasErrors(form.getFieldsError())">
+      <a-button
+        size="large"
+        type="primary"
+        html-type="submit"
+        :disabled="hasErrors(form.getFieldsError())"
+      >
         注册
       </a-button>
     </a-form-item>
@@ -50,7 +97,7 @@
 
 <script>
 import '~/assets/iconfont/iconfont.css'
-import registerApi from '~/api/member/registerApi'
+import registerApi from '@/api/user'
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some((field) => fieldsError[field])
 }
@@ -95,29 +142,26 @@ export default {
         .then((resp) => {
           if (resp.data.success) {
             // 跳转到登录页
-            window.location.href = '/login'
+            // window.location.href = '/login'
+            this.$router.push('/signpage')
           } else {
             this.$message({
               type: 'error',
-              message: '注册失败',
+              message: '',
             })
           }
         })
-        .catch((err) => {
-          this.$message({
-            type: 'error',
-            message: '注册失败',
-          })
-        })
+        .catch((err) => {})
     },
     getCodeFun() {
+      if (this.second < 0) {
+        return
+      }
       const email = this.$refs.email.value
       registerApi
         .getCodeByEmail(email)
         .then((resp) => {
           if (resp.data.success) {
-          } else {
-            this.$message.error(`${resp.data.msg}`)
           }
         })
         .catch((err) => {
@@ -126,7 +170,6 @@ export default {
             message: '服务器内部错误',
           })
         })
-
       this.disable()
     },
     disable() {
