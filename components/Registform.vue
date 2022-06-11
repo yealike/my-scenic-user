@@ -129,10 +129,12 @@ export default {
     },
     handleSubmit(e) {
       e.preventDefault()
+
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
           this.submitRegister(values)
+          console.log('regist', values)
         }
       })
     },
@@ -158,18 +160,20 @@ export default {
         return
       }
       const email = this.$refs.email.value
-      registerApi
-        .getCodeByEmail(email)
-        .then((resp) => {
-          if (resp.data.success) {
-          }
-        })
-        .catch((err) => {
-          this.$message({
-            type: 'error',
-            message: '服务器内部错误',
-          })
-        })
+      console.log(email)
+      registerApi.getCode()
+      // registerApi
+      //   .getCodeByEmail(email)
+      //   .then((resp) => {
+      //     if (resp.data.success) {
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     this.$message({
+      //       type: 'error',
+      //       message: '服务器内部错误',
+      //     })
+      //   })
       this.disable()
     },
     disable() {

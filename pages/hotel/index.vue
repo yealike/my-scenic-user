@@ -2,7 +2,7 @@
   <div class="htole-container">
     <a-row type="flex">
       <a-col class="htole-main" :flex="4">
-        <a-skeleton v-if="hotleListIsEmpty" active />
+        <a-skeleton class="width-900" v-if="hotleListIsEmpty" active />
         <General title="推荐" v-if="!hotleListIsEmpty">
           <template #tool>
             <!-- <div>tool</div> -->
@@ -41,7 +41,7 @@
             <a-button @click="search" class="search-btn">search</a-button>
           </div>
           <div class="input">
-            <a-input v-model="searchKey" placeholder="Basic usage" />
+            <a-input v-model="searchKey" placeholder="输入关键词，查找住宿" />
           </div>
           <a-skeleton v-if="!currentHotel" active />
           <div v-if="currentHotel" class="hotle-info-detail">
@@ -57,6 +57,9 @@
         </a-affix>
       </a-col>
     </a-row>
+    <a-back-top>
+      <a-button type="primary" class="up">UP</a-button>
+    </a-back-top>
   </div>
 </template>
 
@@ -64,6 +67,7 @@
 import General from '@/components/container/General.vue'
 import hotelCard from '@/components/card/hotelCard.vue'
 import hotle from '@/api/hotel'
+import userApi from '@/api/user'
 import { scrollBottom } from '@/utils/scrollBottom'
 export default {
   layout: 'default',
@@ -80,6 +84,7 @@ export default {
       searchKey: '',
       page: 0,
       first: true,
+      user: {},
     }
   },
   methods: {
@@ -92,13 +97,23 @@ export default {
         this.first = false
       }
     },
-    search() {
+    async search() {
       console.log(this.searchKey)
-      //
+      const { data: res } = await hotle.getByKey(1, 10, this.searchKey)
+      this.hotleList = res.records
     },
     async searchById(id) {
       const { data: res } = await hotle.getById(id)
       this.currentHotel = res.hotel
+      console.log(this.currentHotel)
+      const history = {
+        link: window.location.href,
+        tag: '酒店',
+        tagId: this.currentHotel.id,
+        title: this.currentHotel.name,
+        userId: this.user.id,
+      }
+      userApi.addHistory(history)
     },
     scroll() {
       scrollBottom(this.getAllHotel)
@@ -107,6 +122,9 @@ export default {
   mounted() {
     this.getAllHotel()
     window.addEventListener('scroll', this.scroll)
+    this.user = window.localStorage.getItem('user')
+      ? JSON.parse(window.localStorage.getItem('user'))
+      : {}
   },
   destroyed() {
     window.removeEventListener('scroll', this.scroll)
@@ -232,5 +250,13 @@ export default {
   margin-top: 5px;
   font-size: 20px;
   font-weight: 400;
+}
+.width-900 {
+  width: 900px;
+}
+.up {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
 }
 </style>

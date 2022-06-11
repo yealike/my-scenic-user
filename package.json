@@ -1,35 +1,43 @@
 {
-  "name": "my-scenic-user",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
-    "lint:prettier": "prettier --check .",
-    "lint": "npm run lint:prettier",
-    "lintfix": "prettier --write --list-different ."
-  },
-  "dependencies": {
-    "@tinymce/tinymce-vue": "2.1.0",
-    "ant-design-vue": "^1.7.8",
-    "axios": "^0.27.2",
-    "core-js": "^3.19.3",
-    "js-cookie": "^3.0.1",
-    "nuxt": "^2.15.8",
-    "popper.js": "^1.16.1",
-    "tinymce": "5.3.2",
-    "vue": "^2.6.14",
-    "vue-amap": "^0.5.10",
-    "vue-server-renderer": "^2.6.14",
-    "vue-template-compiler": "^2.6.14",
-    "vuex": "^2.0.0",
-    "webpack": "^4.46.0"
-  },
-  "devDependencies": {
-    "@nuxt/types": "^2.15.8",
-    "eslint-config-prettier": "^8.3.0",
-    "prettier": "^2.5.1"
-  }
+    "name": "my-scenic-user",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "test": "nuxt",
+        "dev": "cross-env NODE_ENV=dev nuxt",
+        "build": "nuxt build",
+        "start": "nuxt start",
+        "generate": "nuxt generate",
+        "lint:prettier": "prettier --check .",
+        "lint": "npm run lint:prettier",
+        "lintfix": "prettier --write --list-different ."
+    },
+    "dependencies": {
+        "@tinymce/tinymce-vue": "2.1.0",
+        "ant-design-vue": "^1.7.8",
+        "axios": "^0.27.2",
+        "core-js": "^3.19.3",
+        "cross-env": "^7.0.3",
+        "js-cookie": "^3.0.1",
+        "nuxt": "^2.15.8",
+        "popper.js": "^1.16.1",
+        "tinymce": "5.3.2",
+        "vue": "^2.6.14",
+        "vue-amap": "^0.5.10",
+        "vue-server-renderer": "^2.6.14",
+        "vue-template-compiler": "^2.6.14",
+        "vuex": "^2.0.0",
+        "webpack": "^4.46.0"
+    },
+    "devDependencies": {
+        "@nuxt/types": "^2.15.8",
+        "eslint-config-prettier": "^8.3.0",
+        "prettier": "^2.5.1"
+    },
+    "config": {
+        "nuxt": {
+            "host": "0.0.0.0",
+            "port": 3000
+        }
+    }
 }

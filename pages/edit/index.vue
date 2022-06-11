@@ -1,29 +1,14 @@
 <template>
-  <div
-    class="container-md container-lg"
-    style="border: #4e4e4e 1px solid; border-radius: 5px"
-  >
+  <div class="container-md container-lg" style="border: #4e4e4e 1px solid; border-radius: 5px">
     <div class="create container-md container-lg">
       <h1 class="edit-title">编写新的作品</h1>
-      <a-form
-        :form="form"
-        :label-col="{ span: 5 }"
-        :wrapper-col="{ span: 12 }"
-        @submit="handleSubmit"
-      >
+      <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
         <a-form-item label="标题">
           <a-input v-model="articalInfo.title" />
         </a-form-item>
         <a-form-item label="封面">
-          <a-upload
-            name="avatar"
-            list-type="picture-card"
-            class="avatar-uploader"
-            :show-upload-list="false"
-            action="http://192.168.15.54:8001/scenic/upload/image"
-            @change="handleChange"
-          >
-            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+          <a-upload name="file" list-type="picture-card" class="avatar-uploader" :show-upload-list="false" :action="`${process.env.BASE_URL}/scenic/upload/image`" @change="handleChange">
+            <img v-if="this.articalInfo.cover" :src="this.articalInfo.cover" alt="cover" />
             <div v-else>
               <a-icon :type="'plus'" />
               <div class="ant-upload-text">Upload</div>
@@ -62,6 +47,7 @@ export default {
         title: '',
         cover: '',
         content: '',
+        username: '',
       },
       imageUrl: '',
     }
@@ -73,18 +59,16 @@ export default {
         return
       }
       if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
-        })
-        console.log(info.file.response)
+        this.articalInfo.cover = info.file.response.data.url
       }
     },
     async handleSubmit(e) {
       this.articalInfo.userId = JSON.parse(
         window.localStorage.getItem('user')
       ).id
+      this.articalInfo.username = JSON.parse(
+        window.localStorage.getItem('user')
+      ).username
       e.preventDefault()
       console.log(this.articalInfo)
       if (this.articalInfo.userId == '') {

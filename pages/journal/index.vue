@@ -32,10 +32,14 @@
           :key="item.id"
           :user="item.username"
           :title="item.title"
+          :url="item.cover"
           tag="Log"
         />
       </div>
     </div>
+    <a-back-top>
+      <a-button type="primary" class="up">UP</a-button>
+    </a-back-top>
   </div>
 </template>
 
@@ -56,16 +60,23 @@ export default {
     return {
       journalList: [],
       page: 0,
+      topList: [],
     }
   },
   methods: {
     async getJournalList() {
       this.page++
       const { data: res } = await article.getArticle(this.page, 10)
+      console.log(res)
       this.journalList.push(...res.page.records)
     },
     gotoDetail(id) {
+      console.log(id)
       this.$router.push(`/journal/${id}`)
+    },
+    async getTopArticle() {
+      const { data: res } = await article.getTopArticle()
+      this.topList = res.praiseTop10
     },
     scroll() {
       scrollBottom(this.getJournalList)
@@ -75,15 +86,10 @@ export default {
     getJournalListIsEmpty() {
       return this.journalList.length <= 0
     },
-    topList() {
-      return this.journalList.slice(0, 5)
-    },
-    List() {
-      // return this.journalList.slice(5)
-    },
   },
   mounted() {
     this.getJournalList()
+    this.getTopArticle()
     window.addEventListener('scroll', this.scroll)
   },
   destroyed() {
@@ -117,5 +123,10 @@ export default {
   font-size: 20px;
   font-weight: 800;
   line-height: 50px;
+}
+.up {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
 }
 </style>

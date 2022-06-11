@@ -1,3 +1,4 @@
+import env from './env'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -39,5 +40,8 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     transpile: [/^element-ui/],
+  },
+  env: {
+    BASE_URL: env[process.env.NODE_ENV].BASE_URL,
   },
 }

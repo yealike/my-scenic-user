@@ -1,9 +1,9 @@
 <template>
   <div @click="goto" class="lick-card">
-    <div class="img">
+    <!-- <div class="img">
       <img src="@/assets/images/login-bg.jpg" alt="" />
-    </div>
-    <nuxt-link class="title" :to="url"> {{ title }} </nuxt-link>
+    </div> -->
+    <a :href="url" class="title"> {{ title }} </a>
     <div class="tag">{{ tag }}</div>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     goto() {
-      this.$router.push(this.link)
+      // this.$router.push()
     },
   },
 }

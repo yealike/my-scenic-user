@@ -30,8 +30,9 @@ export default {
       method: 'get',
     })
   },
-  // 根据城市景点id查询景点描述
+
   getDescription(id) {
+    console.log(777777899, id)
     return request({
       url: `/scenic/description/${id}`,
       method: 'get',
@@ -73,27 +74,16 @@ export default {
     )
   },
   addComment(data) {
-    const old = {
-      commentLevel: 0,
-      content: '',
-      gmtCreate: '',
-      id: '',
-      isDelete: 0,
-      isTop: 0,
-      parentCommentId: '',
-      parentCommentUserId: '',
-      praiseNum: 0,
-      replayCommentId: '',
-      replayCommentUserId: '',
-      scenicId: '',
-      scenicName: '',
-      userId: '',
-      userName: '',
-    }
-    return request.post('/scenic/comment/save', data)
+    return request.post('/member/comment/save', data)
   },
   //查询旅游信息
   fetchInformation(id) {
     return request.get(`/scenic/information/${id}`)
+  },
+  //模糊查找
+  fetchByKeyName(current, limit, keyName) {
+    return request.get(
+      `/scenic/scenic/get/byname/${current}/${limit}?scenicName=${keyName}`
+    )
   },
 }

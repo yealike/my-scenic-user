@@ -32,6 +32,9 @@
           @click.native="toDetail(item.id)"
         />
       </div>
+      <a-back-top>
+        <a-button type="primary" class="up">UP</a-button>
+      </a-back-top>
     </div>
   </div>
 </template>
@@ -56,7 +59,11 @@ export default {
     }
   },
   mounted() {
-    this.getScenicListInfo()
+    if (this.$store.state.scenic.scenicList?.length > 0) {
+      this.scenicList = this.$store.state.scenic.scenicList
+    } else {
+      this.getScenicListInfo()
+    }
     this.fetchCityList()
     window.addEventListener('scroll', this.scroll)
   },
@@ -184,5 +191,10 @@ export default {
   width: 100%;
   white-space: nowrap;
   overflow: hidden !important;
+}
+.up {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
 }
 </style>

@@ -1,7 +1,11 @@
 <template>
   <div id="navbar">
     <div id="logo">
-      <span class="logo-icon no-wrap">logo-travel</span>
+      <span class="logo-icon no-wrap">
+        <nuxt-link to="/home"
+          ><img class="logo-img" src="@/assets/images/logo.png" alt=""
+        /></nuxt-link>
+      </span>
       <a-menu v-model="current" mode="horizontal">
         <a-menu-item v-for="item in menus" :key="item.path">
           <nuxt-link :to="item.path">{{ item.title }}</nuxt-link>
@@ -11,7 +15,7 @@
     <div id="search">
       <a-input-search
         v-model="searchKey"
-        placeholder="input search text"
+        placeholder="在这里查找景点"
         style="width: 200px"
         @search="onSearch"
       />
@@ -24,6 +28,7 @@
 
 <script>
 import PersonInfo from '@/components/PersonInfo'
+import scenicApi from '@/api/scenic'
 export default {
   components: { PersonInfo },
   props: {
@@ -32,10 +37,10 @@ export default {
   data() {
     return {
       searchKey: '',
-      current: ['mail'],
+      current: [''],
       menus: [
         {
-          path: '/',
+          path: '/home',
           title: '首页',
         },
         {
@@ -58,14 +63,17 @@ export default {
     }
   },
   methods: {
-    onSearch() {
+    async onSearch() {
       //搜索请求
-    },
-    loginout() {
-      if (this.logined) {
-        //清除用户消息
-      }
-      return
+      const { data: res } = await scenicApi.fetchByKeyName(
+        1,
+        10,
+        this.searchKey
+      )
+      console.log(res.records)
+      this.$store.commit('addScenicList', res.records)
+      this.$router.push('/scenic')
+      this.current = ['/scenic']
     },
   },
 }
@@ -113,5 +121,10 @@ export default {
   .no-wrap {
     display: none;
   }
+}
+.logo-img {
+  width: 90px;
+  height: 50px;
+  object-fit: contain;
 }
 </style>

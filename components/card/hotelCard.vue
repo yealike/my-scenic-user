@@ -1,10 +1,12 @@
 <template>
   <a-card class="margin" hoverable style="width: 230px">
-    <img
-      slot="cover"
-      alt="example"
-      :src="url ? url : '@/assets/images/login-bg.jpg'"
-    />
+    <div class="img-box">
+      <img
+        slot="cover"
+        alt="example"
+        :src="url ? url : '@/assets/images/login-bg.jpg'"
+      />
+    </div>
     <template slot="actions" class="ant-card-actions">
       <a-icon key="ellipsis" type="ellipsis" />
     </template>
@@ -29,6 +31,26 @@ export default {
 .margin {
   margin: 5px 0;
   z-index: 999;
+}
+.img-box {
+  border-radius: 5px;
+  overflow: hidden;
+  width: 180px;
+  height: 180px;
+  overflow: hidden !important;
+  position: relative;
+}
+img {
+  transition: all 0.3s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.margin:hover img {
+  width: 110%;
+  width: 110%;
+  object-fit: cover;
 }
 .price {
   margin: 0;
