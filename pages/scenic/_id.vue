@@ -32,22 +32,10 @@
         <div class="avatar">
           <img :src="user.avatar" />
         </div>
-        <a-input-search
-          id="reply"
-          class="input"
-          :placeholder="reply.name"
-          enter-button="发送"
-          size="large"
-          v-model="replyComment"
-          @search="onComment"
-        />
+        <a-input-search id="reply" class="input" :placeholder="reply.name" enter-button="发送" size="large" v-model="replyComment" @search="onComment" />
         <!-- <a-skeleton v-if="commentIsEmpty" active /> -->
         <div class="comment-bg">
-          <a-comment
-            v-for="commentItem in commentList"
-            :key="commentItem.id"
-            class="comment-item"
-          >
+          <a-comment v-for="commentItem in commentList" :key="commentItem.id" class="comment-item">
             <span slot="actions">
               <span key="comment-nested-reply-to" @click="replyTo(commentItem)">
                 <a href="#reply">回复</a>
@@ -57,25 +45,13 @@
             > -->
             </span>
             <a slot="author">{{ commentItem.username }}</a>
-            <a-avatar
-              @click="gotoPersonInfo(commentItem.userId)"
-              slot="avatar"
-              :src="commentItem.avatar"
-            />
+            <a-avatar @click="gotoPersonInfo(commentItem.userId)" slot="avatar" :src="commentItem.avatar" />
             <p slot="content">
               {{ commentItem.content }}
             </p>
-            <a-comment
-              v-for="child in commentItem.children"
-              :key="child.id"
-              class="comment-item"
-            >
+            <a-comment v-for="child in commentItem.children" :key="child.id" class="comment-item">
               <a slot="author">{{ child.username }}</a>
-              <a-avatar
-                slot="avatar"
-                @click="gotoPersonInfo(child.userId)"
-                :src="child.avatar"
-              />
+              <a-avatar slot="avatar" @click="gotoPersonInfo(child.userId)" :src="child.avatar" />
               <p slot="content">
                 {{ child.content }}
               </p>
@@ -91,18 +67,8 @@
           </client-only>
         </div>
         <div class="scenic-info-card">
-          <div
-            v-for="scenicItem in scenicList"
-            :key="scenicItem.id"
-            class="card-message"
-          >
-            <scenicCard
-              :name="scenicItem.name"
-              :star="scenicItem.star"
-              :url="scenicItem.url"
-              @click.native="gotoDetail(scenicItem.id)"
-              class="card"
-            />
+          <div v-for="scenicItem in scenicList" :key="scenicItem.id" class="card-message">
+            <scenicCard :name="scenicItem.name" :star="scenicItem.star" :url="scenicItem.url" @click.native="gotoDetail(scenicItem.id)" class="card" />
             <div class="message">
               <div class="title">{{ scenicItem.name }}</div>
               <div>{{ scenicItem.position }}</div>
@@ -368,8 +334,6 @@ export default {
   width: 200px;
   height: 80px;
   margin: 5px 0;
-  /* background: url('@/assets/images/img (1).png'); */
-  /* background-color: skyblue; */
   background-image: linear-gradient(#0396ff, #abdcff);
   background-size: cover;
   border-radius: 10px;

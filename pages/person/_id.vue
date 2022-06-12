@@ -28,23 +28,9 @@
         <a-icon class="item" type="zhihu" />
       </div>
     </div>
-    <a-drawer
-      :placement="placement"
-      height
-      width
-      :closable="false"
-      :visible="visible"
-      @close="onClose"
-    >
+    <a-drawer :placement="placement" height width :closable="false" :visible="visible" @close="onClose">
       <div class="form-layout">
-        <a-form
-          class="form-main"
-          v-show="type == 'setting'"
-          :form="form"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 12 }"
-          @submit="handleSubmit"
-        >
+        <a-form class="form-main" v-show="type == 'setting'" :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
           <a-row>
             <a-col :span="8">
               <a-form-item label="id">
@@ -57,10 +43,7 @@
                 <a-input v-model="userInfo.intro" />
               </a-form-item>
               <a-form-item label="birth">
-                <a-date-picker
-                  :defaultValue="userInfo.birth"
-                  @change="changeDate"
-                />
+                <a-date-picker :defaultValue="userInfo.birth" @change="changeDate" />
               </a-form-item>
               <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
                 <a-button type="primary" html-type="submit">
@@ -70,11 +53,7 @@
             </a-col>
             <a-col :span="8">
               <a-form-item label="Gender">
-                <a-select
-                  v-model="G"
-                  placeholder="Select a option and change input text above"
-                  @change="handleSelectChange"
-                >
+                <a-select v-model="G" placeholder="Select a option and change input text above" @change="handleSelectChange">
                   <a-select-option value="1"> 男 </a-select-option>
                   <a-select-option value="0"> 女 </a-select-option>
                 </a-select>
@@ -105,15 +84,7 @@
                 </div>
               </a-upload>
               自定义背景
-              <a-upload
-                name="avatar"
-                list-type="picture-card"
-                class="avatar-uploader"
-                :show-upload-list="false"
-                action="#"
-                :before-upload="beforeBGUpload"
-                @change="bgChange"
-              >
+              <a-upload name="avatar" list-type="picture-card" class="avatar-uploader" :show-upload-list="false" action="#" :before-upload="beforeBGUpload" @change="bgChange">
                 <img v-if="bgUrl" :src="bgUrl" />
                 <div v-else>
                   <a-icon :type="bgloading ? 'loading' : 'plus'" />
@@ -136,13 +107,7 @@
           />
         </div>
         <div v-show="type == 'history'">
-          <lickCard
-            v-for="item in historyList"
-            :key="item.id"
-            :url="item.link"
-            :title="item.title"
-            :tag="item.tag"
-          />
+          <lickCard v-for="item in historyList" :key="item.id" :url="item.link" :title="item.title" :tag="item.tag" />
         </div>
       </div>
     </a-drawer>

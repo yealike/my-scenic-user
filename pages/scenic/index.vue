@@ -10,27 +10,14 @@
       <div class="citylist select-list">
         <span :style="{ marginRight: 8 }">景点筛选:</span>
         <template v-for="tag in cityList">
-          <a-checkable-tag
-            class="select"
-            :key="tag.id"
-            :checked="selectedTags.indexOf(tag) > -1"
-            @change="(checked) => handleChange(tag, checked)"
-          >
+          <a-checkable-tag class="select" :key="tag.id" :checked="selectedTags.indexOf(tag) > -1" @change="(checked) => handleChange(tag, checked)">
             {{ tag.name }}
           </a-checkable-tag>
         </template>
       </div>
       <a-skeleton v-if="scenicListIsEmpty" active />
       <div v-if="!scenicListIsEmpty" class="card-list">
-        <scenicCard
-          class="card-item"
-          v-for="item in scenicList"
-          :key="item.id"
-          :name="item.name"
-          :url="item.url"
-          :star="item.star"
-          @click.native="toDetail(item.id)"
-        />
+        <scenicCard class="card-item" v-for="item in scenicList" :key="item.id" :name="item.name" :url="item.url" :star="item.star" @click.native="toDetail(item.id)" />
       </div>
       <div class="scroll">向下滚动加载更多</div>
       <a-back-top>

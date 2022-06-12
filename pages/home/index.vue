@@ -10,17 +10,8 @@
       <a-col class="index-left">
         <a-skeleton v-if="scenicListIsEmpty" active />
         <div class="goodTitle">推荐去的景点</div>
-        <infoCard
-          v-for="item in scenicList"
-          :key="item.id"
-          :title="item.name"
-          :url="item.url"
-          :cityName="item.cityName"
-          :position="item.position"
-          :adPrice="item.adPrice"
-          :star="item.star"
-          @click.native="gotoDetail(item.id)"
-        />
+        <infoCard v-for="item in scenicList" :key="item.id" :title="item.name" :url="item.url" :cityName="item.cityName" :position="item.position" :adPrice="item.adPrice" :star="item.star"
+          @click.native="gotoDetail(item.id)" />
       </a-col>
       <a-col class="index-left">
         <a-affix>
@@ -61,19 +52,8 @@
             <a-skeleton v-if="getJournalListIsEmpty" active />
             <div class="goodTitle">景点LOG</div>
             <div v-if="!getJournalListIsEmpty">
-              <journalCard
-                v-for="item in journalList"
-                :avatar="item.avatar"
-                :id="item.id"
-                :key="item.id"
-                :title="item.title"
-                :username="item.username"
-                :cover="item.cover"
-                :praiseCount="item.praiseCount"
-                :viewCount="item.viewCount"
-                :gmtCreate="item.gmtCreate"
-                :userId="item.userId"
-              />
+              <journalCard v-for="item in journalList" :avatar="item.avatar" :id="item.id" :key="item.id" :title="item.title" :username="item.username" :cover="item.cover"
+                :praiseCount="item.praiseCount" :viewCount="item.viewCount" :gmtCreate="item.gmtCreate" :userId="item.userId" />
             </div>
           </div>
         </a-affix>
@@ -132,7 +112,8 @@ export default {
     async getCloudList() {
       const { data: res } = await cloudapi.getCloud()
       console.log('cloud', res)
-      this.cloudList = res.cloudList || []
+      this.cloudList = res.data || []
+      console.log(this.cloudList)
     },
   },
   computed: {

@@ -1,33 +1,14 @@
 <template>
-  <div
-    class="container-md container-lg"
-    style="border: #4e4e4e 1px solid; border-radius: 5px"
-  >
+  <div class="container-md container-lg" style="border: #4e4e4e 1px solid; border-radius: 5px">
     <div class="create container-md container-lg">
       <h1 class="edit-title">编写新的作品</h1>
-      <a-form
-        :form="form"
-        :label-col="{ span: 5 }"
-        :wrapper-col="{ span: 12 }"
-        @submit="handleSubmit"
-      >
+      <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
         <a-form-item label="标题">
           <a-input v-model="articalInfo.title" />
         </a-form-item>
         <a-form-item label="封面">
-          <a-upload
-            name="file"
-            list-type="picture-card"
-            class="avatar-uploader"
-            :show-upload-list="false"
-            :action="`${BASE_URL}/scenic/upload/image`"
-            @change="handleChange"
-          >
-            <img
-              v-if="this.articalInfo.cover"
-              :src="this.articalInfo.cover"
-              alt="cover"
-            />
+          <a-upload name="file" list-type="picture-card" class="avatar-uploader" :show-upload-list="false" :action="`${BASE_URL}/scenic/upload/image`" @change="handleChange">
+            <img v-if="this.articalInfo.cover" :src="this.articalInfo.cover" alt="cover" />
             <div v-else>
               <a-icon :type="'plus'" />
               <div class="ant-upload-text">Upload</div>
