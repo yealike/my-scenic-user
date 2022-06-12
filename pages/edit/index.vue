@@ -16,14 +16,18 @@
         </a-form-item>
         <a-form-item label="封面">
           <a-upload
-            name="avatar"
+            name="file"
             list-type="picture-card"
             class="avatar-uploader"
             :show-upload-list="false"
-            action="http://192.168.15.54:8001/scenic/upload/image"
+            :action="`${BASE_URL}/scenic/upload/image`"
             @change="handleChange"
           >
-            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+            <img
+              v-if="this.articalInfo.cover"
+              :src="this.articalInfo.cover"
+              alt="cover"
+            />
             <div v-else>
               <a-icon :type="'plus'" />
               <div class="ant-upload-text">Upload</div>
@@ -44,6 +48,7 @@
 <script>
 import TEditor from '@/components/TEditor'
 import articleApi from '@/api/article.js'
+import env from '@/env'
 function getBase64(img, callback) {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
@@ -62,6 +67,7 @@ export default {
         title: '',
         cover: '',
         content: '',
+        username: '',
       },
       imageUrl: '',
     }
@@ -73,18 +79,16 @@ export default {
         return
       }
       if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
-        })
-        console.log(info.file.response)
+        this.articalInfo.cover = info.file.response.data.url
       }
     },
     async handleSubmit(e) {
       this.articalInfo.userId = JSON.parse(
         window.localStorage.getItem('user')
       ).id
+      this.articalInfo.username = JSON.parse(
+        window.localStorage.getItem('user')
+      ).username
       e.preventDefault()
       console.log(this.articalInfo)
       if (this.articalInfo.userId == '') {
@@ -95,6 +99,11 @@ export default {
         // 发送成功之后，跳转到个人中心
         this.$router.push('/person/self')
       }
+    },
+  },
+  computed: {
+    BASE_URL() {
+      return env.dev.BASE_URL
     },
   },
 }

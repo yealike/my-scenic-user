@@ -129,47 +129,50 @@ export default {
     },
     handleSubmit(e) {
       e.preventDefault()
+
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
+          console.log(values)
           this.submitRegister(values)
+          console.log('regist', values)
         }
       })
     },
-    submitRegister(user) {
-      registerApi
-        .register(user)
-        .then((resp) => {
-          if (resp.data.success) {
-            // 跳转到登录页
-            // window.location.href = '/login'
-            this.$router.push('/signpage')
-          } else {
-            this.$message({
-              type: 'error',
-              message: '',
-            })
-          }
+    async submitRegister(user) {
+      console.log('user', user)
+      const { data: res } = await registerApi.register(user)
+      console.log('rreess', res)
+      if (res.isOK) {
+        this.$notification.success({
+          message: '注册成功',
         })
-        .catch((err) => {})
+        this.$router.push('/signpage')
+      } else {
+        this.$notification.error({
+          message: '注册失败',
+        })
+      }
     },
     getCodeFun() {
-      if (this.second < 0) {
+      if (this.second > 0 && this.second !== 60) {
         return
       }
       const email = this.$refs.email.value
-      registerApi
-        .getCodeByEmail(email)
-        .then((resp) => {
-          if (resp.data.success) {
-          }
-        })
-        .catch((err) => {
-          this.$message({
-            type: 'error',
-            message: '服务器内部错误',
-          })
-        })
+      console.log(email)
+      registerApi.getCode(email)
+      // registerApi
+      //   .getCodeByEmail(email)
+      //   .then((resp) => {
+      //     if (resp.data.success) {
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     this.$message({
+      //       type: 'error',
+      //       message: '服务器内部错误',
+      //     })
+      //   })
       this.disable()
     },
     disable() {

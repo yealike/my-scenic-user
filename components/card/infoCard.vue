@@ -6,10 +6,12 @@
     <div class="info-main">
       <div class="message">{{ message }}</div>
       <div class="title">{{ title }}</div>
-      <div class="info">{{ cityName }}</div>
-      <div class="info">{{ position }}</div>
-      <div class="info">{{ adPrice }}</div>
-      <div class="info">{{ star }}</div>
+      <div class="info">城市：{{ cityName }}</div>
+      <div class="info">地址：{{ position }}</div>
+      <div class="info">票价：{{ adPrice }}$</div>
+      <div class="info">
+        星级：<a-icon type="star" v-for="item in star" :key="item" />
+      </div>
     </div>
   </div>
 </template>
@@ -31,17 +33,22 @@ export default {
 <style scoped>
 .info-card {
   width: 800px;
-  height: 186px;
-  padding: 0 20px 20px 0;
+  height: 166px;
+  padding: 0 20px 10px 0;
+  padding-top: 10px;
   display: flex;
   /* background-color: #666; */
+  border-top: 1px solid #ccc;
   justify-content: space-between;
   align-items: flex-start;
+  /* background-image: linear-gradient(#f1eae9, #ffffff); */
 }
 .info-card .info-img {
   width: 200px;
   height: 130px;
-  background-color: pink;
+  border-radius: 10px;
+  overflow: hidden;
+  /* background-color: pink; */
 }
 
 img {
@@ -53,7 +60,7 @@ img {
 .info-main {
   flex: 1;
   margin-left: 10px;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 .title {
   font-size: 20px;

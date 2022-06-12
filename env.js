@@ -1,13 +1,11 @@
-const apisMap = {
-  development: {
+module.exports = {
+  dev: {
     DESC: '开发',
     // API_BASE_URL: 'http://localhost:88' || 'http://www.example.org'
-    API_BASE_URL: 'http://localhost:88',
+    BASE_URL: 'http://192.168.15.54:88',
   },
-  production: {
+  pro: {
     DESC: '生产',
-    API_BASE_URL: '',
+    BASE_URL: 'http://192.168.15.54:88',
   },
 }
-
-export default apisMap[process.env.NODE_ENV]

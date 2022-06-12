@@ -28,6 +28,8 @@ export default {
 <style>
 .container-clo {
   cursor: pointer;
+  border-radius: 5px;
+  overflow: hidden;
   width: 230px;
   height: 400px;
   margin-top: 5px;

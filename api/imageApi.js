@@ -1,14 +1,12 @@
-import request from "@/utils/request";
-
-const baseUrl = '/scenic/scenic'
+import request from '@/utils/request'
 
 export default {
   // 上传图片
   addImage(image) {
     return request({
-      url: `${baseUrl}/oss`,
+      url: '/scenic/upload/image',
       method: 'post',
-      data: image
+      data: image,
     })
-  }
+  },
 }

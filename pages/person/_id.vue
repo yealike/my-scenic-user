@@ -1,20 +1,24 @@
 <template>
   <div class="person-bg" :style="bgstyle">
     <div class="avatar">
-      <nuxt-link to="/"><img :src="userInfo.avatar" /></nuxt-link>
+      <nuxt-link to="/home"
+        ><img :src="userInfo.avatar ? userInfo.avatar : defaultImg"
+      /></nuxt-link>
     </div>
     <div class="no-chili">{{ userInfo.username }}</div>
     <a-button v-if="isSelf" class="setting" @click="showSetting">设置</a-button>
     <a-button v-if="isSelf" class="setting" @click="loginOut">退出</a-button>
-    <a-button v-if="!isSelf" class="setting" @click="follow">关注</a-button>
-    <div>粉丝:{{ userInfo.fans }} 关注:{{ userInfo.focus }}</div>
+    <a-button v-if="!isSelf" class="setting" @click="toggleFollow">{{
+      followed
+    }}</a-button>
+    <div>粉丝:{{ followInfo.fansCount }} 关注:{{ followInfo.focusCount }}</div>
     <div class="introduct">{{ userInfo.intro }}</div>
     <div v-if="isSelf" class="tags">
       <nuxt-link to="/edit">
         <div class="tag">写日记</div>
       </nuxt-link>
       <div @click="showHistory" class="tag">浏览历史</div>
-      <div @click="showLike" class="tag">我的收藏</div>
+      <!-- <div @click="showLike" class="tag">我的收藏</div> -->
     </div>
     <div class="link">
       <div>
@@ -82,11 +86,11 @@
             <a-col :span="8">
               头像
               <a-upload
-                name="avatar"
+                name="file"
                 list-type="picture-card"
                 class="avatar-uploader"
                 :show-upload-list="false"
-                action="http://192.168.15.54:8001/scenic/upload/image"
+                :action="`${BASE_URL}/scenic/upload/image`"
                 :before-upload="beforeAvatarUpload"
                 @change="avatarChange"
               >
@@ -116,11 +120,20 @@
                   <div class="ant-upload-text">Upload</div>
                 </div>
               </a-upload>
+              <a-button @click="back" class="back" type="primary"
+                >恢复默认壁纸</a-button
+              >
             </a-col>
           </a-row>
         </a-form>
         <div v-show="type == 'like'">
-          <lickCard url="/url" />
+          <lickCard
+            v-for="item in colleList"
+            :key="item.id"
+            :url="item.link"
+            :title="item.title"
+            :tag="item.tag"
+          />
         </div>
         <div v-show="type == 'history'">
           <lickCard
@@ -140,6 +153,7 @@
 import lickCard from '@/components/card/lickCard.vue'
 import user from '@/api/user'
 import Cookies from 'js-cookie'
+import env from '@/env'
 function getBase64(img, callback) {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
@@ -154,6 +168,13 @@ export default {
     return {
       //性别
       G: '',
+      //关注信息
+      followInfo: {
+        focused: false,
+        focusCount: 0,
+        fansCount: 0,
+      },
+      user: {},
 
       form: {},
       placement: 'top',
@@ -170,9 +191,14 @@ export default {
       userInfo: {},
 
       historyList: [],
+      colleList: [],
     }
   },
   methods: {
+    back() {
+      window.localStorage.removeItem('bgUrl')
+      this.bgUrl = null
+    },
     showSetting() {
       this.placement = 'top'
       this.visible = true
@@ -188,6 +214,7 @@ export default {
       this.placement = 'left'
       this.visible = true
       this.type = 'like' //setting|history|like|follow
+      this.fetchCollect()
     },
     showFollow() {
       this.placement = 'left'
@@ -208,13 +235,8 @@ export default {
         this.loading = true
         return
       }
-      console.log(info.file.response)
       if (info.file.status === 'done') {
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
-          console.log(imageUrl)
-        })
+        this.userInfo.avatar = info.file.response.data.url
       }
     },
     beforeBGUpload(file) {
@@ -256,22 +278,82 @@ export default {
     },
     async fetchUserInfo() {
       const id = this.$route.params.id
+      console.log('iiiddd', id)
+      const localid = window.localStorage.getItem('user')
+        ? JSON.parse(window.localStorage.getItem('user')).id
+        : null
       if (this.isSelf) {
-        const { data: res } = await user.getLoginUserInfo()
+        console.log('self')
+        const { data: res } = await user.getUserInfoById(localid, localid)
         this.userInfo = res.member
+        this.followInfo.focusCount = res.focusCount
+        this.followInfo.fansCount = res.fansCount
+        this.followInfo.focused = res.focused
         this.visible = false
+        console.log('my', this.userInfo)
       } else {
+        console.log('other')
         //获取查看对象info
-        const { data: res } = await user.getUserInfoById(id)
+        const { data: res } = await user.getUserInfoById(id, localid)
         this.userInfo = res.member
+        console.log('otherinfo', this.userInfo)
+        this.followInfo.focusCount = res.focusCount
+        this.followInfo.fansCount = res.fansCount
+        this.followInfo.focused = res.focused
+        console.log(99, res)
+        const history = {
+          link: window.location.href,
+          tag: '主页',
+          tagId: this.userInfo.id,
+          title: this.userInfo.username,
+          userId: this.user.id,
+        }
+        if (this.user.id) {
+          user.addHistory(history)
+        }
       }
+      console.log('456', this.followInfo.focused)
       this.G = this.userInfo.gender == 1 ? '男' : '女'
     },
     async fetHistory() {
       const { data: res } = await user.getHistory(this.userInfo.id, 1, 10)
       this.historyList = res.records
     },
-    follow() {},
+    async fetchCollect() {
+      console.log('collect')
+      console.log(this.userInfo.id)
+      const { data: res } = await user.fetchCollectList(this.userInfo.id, 1, 10)
+      this.colleList = res.records
+      //  不知道数据格式
+      // console.log(res)
+      // console.log(this.colleList)
+    },
+    async fetchFollow() {
+      //获取自己的ID
+      const MID = this.user.id
+      // 获取对方ID
+      const UID = this.userInfo.id
+      //获取关注
+      const { data: res } = await user.fetchFollow(UID, MID)
+      //赋值关注信息
+      // this.followInfo = res
+      console.log(888, res)
+    },
+    async toggleFollow() {
+      //获取自己的ID
+      const MID = this.user.id
+      // 获取对方ID
+      const UID = this.userInfo.id
+
+      console.log(MID, UID)
+      //发请求
+      const { data: res } = await user.toggleFollow(UID, MID)
+      console.log(789546, res)
+      this.followInfo.focused = res.isFocus
+      //重新获取
+      // this.fetchFollow()
+      this.fetchUserInfo()
+    },
     async handleSubmit(e) {
       e.preventDefault()
       // console.log(this.userInfo.birth._i)
@@ -283,7 +365,8 @@ export default {
       const { data: res } = await user.updateById(this.userInfo)
       console.log(res)
       this.visible = false
-      this.fetchUserInfo()
+      await this.fetchUserInfo()
+      Cookies.set('user', JSON.stringify(this.userInfo))
     },
     async handleSelectChange(e) {
       this.userInfo.gender = e
@@ -293,7 +376,7 @@ export default {
     // 退出
     loginOut() {
       window.localStorage.clear()
-      this.$router.push('/')
+      this.$router.push('/home')
       this.$store.commit('loginout')
       Cookies.set('logined', false)
     },
@@ -311,6 +394,10 @@ export default {
   },
   computed: {
     isSelf() {
+      // const id = this.$route.params.id
+      // const lid = Cookies.getItem('user')
+      //   ? JSON.parse(window.localStorage.getItem('user')).id
+      //   : null
       return this.$route.params.id == 'self'
     },
     bgstyle() {
@@ -320,12 +407,25 @@ export default {
           : `url(${require('../../assets/images/login-bg.jpg')})`,
       }
     },
+    followed() {
+      return this.followInfo.focused ? '已关注' : '关注'
+    },
+    BASE_URL() {
+      return env.dev.BASE_URL
+    },
+    defaultImg() {
+      return require('@/assets/images/icon (1).png')
+    },
   },
   mounted() {
     this.fetchUserInfo()
     if (window.localStorage.getItem('bgUrl')) {
       this.bgUrl = window.localStorage.getItem('bgUrl')
     }
+    this.user = window.localStorage.getItem('user')
+      ? JSON.parse(window.localStorage.getItem('user'))
+      : null
+    this.fetchFollow()
   },
 }
 </script>

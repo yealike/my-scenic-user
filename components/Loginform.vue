@@ -115,7 +115,7 @@ export default {
           // this.$store.commit('login')
           window.localStorage.setItem('token', resp.data.token)
           // 跳转页面
-          this.$router.push('/')
+          this.$router.push('/home')
         } else {
           this.$message.error(resp.data.msg)
         }

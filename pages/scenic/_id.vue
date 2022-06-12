@@ -2,22 +2,33 @@
   <div>
     <a-row class="scenic-card-id" type="flex">
       <a-col class="map-comment" :flex="4">
+        <a-skeleton v-if="!scenic.url" active />
         <div>
-          <div>
+          <div class="bor-r" v-if="scenic.url">
             <img :src="scenic.url" alt="" />
           </div>
-          <div>
+          <div class="scenic-title">{{ scenic.name }}</div>
+          <h2 class="c34b9c2">概述</h2>
+          <div v-html="des.description"></div>
+          <div class="c34b9c2 ptb">旅游时节</div>
+          <div v-html="tips"></div>
+          <div v-if="information">
             {{ information.season }}
           </div>
-          <div v-html="information.traffic"></div>
+          <div class="c34b9c2 ptb">交通线路</div>
+          <div v-if="information" v-html="information.traffic"></div>
+          <div class="c34b9c2 ptb">小贴士</div>
+          <div v-html="information.tips"></div>
         </div>
+        <div class="c34b9c2 ptb">门票</div>
         <div class="s-price">
           <div v-for="item in priceList" :key="item.id" class="scenic-price">
             <div class="title">{{ item.price }}</div>
             <div class="price">{{ item.description }}</div>
           </div>
         </div>
-        <div class="comments">评论319最热最新</div>
+        <div class="c34b9c2 ptb">评论</div>
+        <div class="comments">评论{{ commentList.length }}最热最新</div>
         <div class="avatar">
           <img :src="user.avatar" />
         </div>
@@ -30,6 +41,7 @@
           v-model="replyComment"
           @search="onComment"
         />
+        <!-- <a-skeleton v-if="commentIsEmpty" active /> -->
         <div class="comment-bg">
           <a-comment
             v-for="commentItem in commentList"
@@ -106,6 +118,7 @@
 <script>
 import scenicApi from '@/api/scenic'
 import scenicCard from '@/components/card/scenicCard.vue'
+import userApi from '@/api/user'
 export default {
   name: 'scenic-id',
   components: {
@@ -113,6 +126,8 @@ export default {
   },
   data() {
     return {
+      tips: {},
+
       user: {},
       zoom: 15,
       center: [125.441458, 43.883363],
@@ -125,37 +140,49 @@ export default {
       reply: {
         name: '回复内容',
       },
+      toPerson: {},
       replyComment: '',
       information: {},
+      des: {},
     }
   },
   created() {},
-  mounted() {
-    this.fetchInfo()
+  async mounted() {
+    await this.fetchInfo()
     this.getPrice()
-    this.getScenicList()
+    await this.getScenicList()
     this.getUser()
     this.getComments()
-    this.fetchInformation()
+    await this.fetchInformation()
+    this.getDescription()
   },
   methods: {
     getUser() {
       const user = window.localStorage.getItem('user')
-      this.user = JSON.parse(user)
+      this.user = JSON.parse(user) || {}
     },
     //获取景点信息
     async fetchInfo() {
       const id = this.$route.params.id
       const { data: res } = await scenicApi.getScenicInfoById(id)
       this.scenic = res.scenic
-      console.log(this.scenic)
+
+      this.center = [res.scenic.longitude, res.scenic.latitude]
       this.latitude = res.scenic.latitude
       this.longitude = res.scenic.longitude
+      if (id) {
+        this.addHistory()
+      }
     },
     // 获取评论列表
     async getComments() {
       const id = this.$route.params.id
-      const { data: res } = await scenicApi.fetchAllComment(1, 10, '景点', 1)
+      const { data: res } = await scenicApi.fetchAllComment(
+        1,
+        10,
+        '景点',
+        this.id
+      )
       this.commentList = res.records
       console.log('%%', res)
     },
@@ -173,41 +200,51 @@ export default {
     },
     //回复
     replyTo(item) {
-      this.reply.name = item.username
-      this.reply.id = item.userId
-      console.log(this.reply)
-      if (this.reply.id) {
-      } else {
-      }
+      this.toPerson = item
+      this.reply.name = '@' + item.username
     },
     //获取旅游信息
     async fetchInformation() {
       const id = this.$route.params.id
       const { data: res } = await scenicApi.fetchInformation(id)
+      console.log('rrrrrrr', res)
       this.information = res.information
+      this.tips = res.tips
+      console.log('tips', this.tips)
+      console.log('info77', res)
+    },
+    //
+    async getDescription() {
+      const { data: res } = await scenicApi.getDescription(this.scenic.id)
+      console.log('des', res)
+      this.des = res.description
     },
     async onComment() {
-      const res = await scenicApi.addComment({
-        commentLevel: 0,
-        content: this.replyComment,
-        gmtCreate: '',
-        id: '',
-        isDelete: 0,
-        isTop: 0,
-        parentCommentId: '',
-        parentCommentUserId: '',
-        praiseNum: 0,
-        replayCommentId: '',
-        replayCommentUserId: '',
-        scenicId: this.$route.params.id,
-        scenicName: this.scenic.name,
-        userId: this.user.id,
-        userName: this.user.username,
-      })
-      console.log(res)
-      if (res.code == 20000) {
-        //操作成功
+      // const user = window.localStorage.getItem('user')
+      //   ? JSON.parse(window.localStorage.getItem('user'))
+      //   : {}
+      // console.log('uuu', user)
+      if (!window.localStorage.getItem('user')) {
+        return this.$router.push('/signpage')
       }
+      const reply = {
+        content: this.replyComment,
+        tag: '景点',
+        tagId: this.scenic.id,
+        tagTitle: this.scenic.name,
+        userId: JSON.parse(window.localStorage.getItem('user')).id,
+      }
+      if (!this.toPerson.id) {
+        //一级
+        reply.level = 1
+        reply.parentUserId = reply.userId
+      } else {
+        // 二级
+        reply.level = 2
+        reply.parentUserId = this.toPerson.id
+      }
+      await scenicApi.addComment(reply)
+      this.getComments()
     },
     gotoPersonInfo(id) {
       this.$router.push(`/person/${id}`)
@@ -216,11 +253,22 @@ export default {
     gotoDetail(id) {
       this.$router.push(`/scenic/${id}`)
     },
+    //添加浏览历史
+    addHistory() {
+      const history = {
+        link: window.location.href,
+        tag: '景点',
+        tagId: this.scenic.id,
+        title: this.scenic.name,
+        userId: this.user.id,
+      }
+      userApi.addHistory(history)
+    },
   },
   computed: {
-    // user() {
-    //   return this.$store.getters.getUserInfo
-    // },
+    commentIsEmpty() {
+      return this.commentList.length <= 0
+    },
   },
 }
 </script>
@@ -228,7 +276,7 @@ export default {
 <style scoped>
 .scenic-card-id {
   max-width: 1500px;
-  margin: auto;
+  margin: 20px auto;
   height: 500px;
   /* background-color: #ccc; */
 }
@@ -320,14 +368,33 @@ export default {
   width: 200px;
   height: 80px;
   margin: 5px 0;
-  background: url('@/assets/images/越王楼.jpg');
+  /* background: url('@/assets/images/img (1).png'); */
+  /* background-color: skyblue; */
+  background-image: linear-gradient(#0396ff, #abdcff);
   background-size: cover;
   border-radius: 10px;
-  color: #fff;
+  color: #000;
 }
 .comment-bg {
   background-color: #eee;
   color: #000;
   border-radius: 20px;
+}
+.scenic-title {
+  font-size: 20px;
+  margin: 20px 0;
+  font-weight: 800;
+}
+.c34b9c2 {
+  color: #34b9c2;
+  font-weight: 800;
+  font-size: 40px;
+}
+.ptb {
+  margin: 15px 0;
+}
+.bor-r {
+  border-radius: 15px;
+  overflow: hidden;
 }
 </style>

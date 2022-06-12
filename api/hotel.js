@@ -23,4 +23,10 @@ export default {
       name,
     })
   },
+  //模糊查询
+  getByKey(current, limit, key) {
+    return request.get(
+      `/scenic/hotel/query/hotel/${current}/${limit}?hotelName=${key}`
+    )
+  },
 }

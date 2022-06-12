@@ -81,12 +81,14 @@ export default {
   line-height: 20px;
 }
 .info-icon {
-  margin: 0 50px;
+  margin-left: 50px;
 }
 .info-icon span {
   margin-left: 18px;
 }
 .img-list {
+  border-radius: 5px;
+  overflow: hidden;
   margin-left: 70px;
   height: 213px;
   overflow: hidden;

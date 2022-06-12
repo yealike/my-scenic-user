@@ -1,10 +1,11 @@
 import axios from 'axios'
 import cookie from 'js-cookie'
 
+console.log('env', process.env.BASE_URL)
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'http://192.168.15.54:88/',
-  timeout: 20000,
+  baseURL: process.env.BASE_URL,
+  timeout: 30000,
 })
 
 // 添加请求拦截器

@@ -1,5 +1,7 @@
 <template>
-  <a-button type="primary" @click="toggleLike">{{ message }}</a-button>
+  <a-button class="my-button" :type="type" @click="toggleLike">{{
+    message
+  }}</a-button>
 </template>
 
 <script>
@@ -32,6 +34,9 @@ export default {
     message() {
       return this.like ? '已点赞' : '点赞'
     },
+    type() {
+      return this.like ? '' : 'primary'
+    },
   },
   mounted() {
     this.fetchLike()
@@ -39,4 +44,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.my-button {
+  width: 100px;
+  height: 50px;
+  border-radius: 50px;
+}
+</style>

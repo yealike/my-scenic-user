@@ -14,8 +14,8 @@
 
 <script>
 import Editor from '@tinymce/tinymce-vue'
-import imageApi from "@/api/imageApi";
-
+import imageApi from '@/api/imageApi'
+import env from '@/env'
 let tinymce
 if (process.client) {
   tinymce = require('tinymce/tinymce')
@@ -32,7 +32,6 @@ if (process.client) {
   require('tinymce/plugins/fullscreen')
   require('tinymce/icons/default')
 }
-
 
 export default {
   name: 'VEditor',
@@ -56,7 +55,7 @@ export default {
     plugins: {
       type: [String, Array],
       default:
-      // 'lists image link media table textcolor wordcount contextmenu fullscreen',
+        // 'lists image link media table textcolor wordcount contextmenu fullscreen',
         'lists image link media table wordcount fullscreen',
     },
     toolbar: {
@@ -76,7 +75,8 @@ export default {
   },
   data() {
     return {
-      img_upload_url: 'http://localhost:88/scenic/scenic/oss',
+      // BASE_URL: '',
+      img_upload_url: `${env.dev.BASE_URL}/scenic/upload/image`,
       //初始化配置
       init: {
         language_url: '/tinymce/langs/zh_CN.js',
@@ -109,15 +109,13 @@ export default {
         // 自定义上传图片组件
         images_upload_url: this.img_upload_url,
         images_upload_handler: (blobInfo, success, failure) => {
-
           let formData = new FormData()
           formData.append('file', blobInfo.blob())
           formData.append('filename', blobInfo.filename)
-          imageApi.addImage(formData)
-            .then(resp => {
-              // console.log('图片上传成功回调==>',resp)
-              success(resp.data.data.url)
-            })
+          imageApi.addImage(formData).then((resp) => {
+            // console.log('图片上传成功回调==>',resp)
+            success(resp.data.url)
+          })
         },
       },
       myValue: this.value,
@@ -125,6 +123,12 @@ export default {
     }
   },
   mounted() {
+    // this.BASE_URL = env.dev.BASE_URL
+  },
+  computed: {
+    // BASE_URL() {
+    //   return env.dev.BASE_URL
+    // },
   },
   methods: {
     reload() {
